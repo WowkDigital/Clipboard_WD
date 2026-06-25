@@ -39,8 +39,8 @@ require_once __DIR__ . '/api.php';
                 <span id="status-text" class="mono text-xs" style="color:var(--text-secondary)">OFFLINE</span>
             </span>
             <span class="hud-badge hidden sm:inline-flex">
-                <span class="mono text-xs" style="color:var(--text-muted)">ROOM:</span>
-                <span id="room-display" class="mono text-xs cursor ml-1" style="color:var(--accent-primary); font-weight:bold;">—</span>
+                <span class="mono text-xs" style="color:var(--text-muted)">SESSION ID:</span>
+                <span id="room-display" class="mono text-xs ml-1" style="color:var(--accent-primary); font-weight:bold;">—</span>
             </span>
         </div>
         
@@ -60,10 +60,16 @@ require_once __DIR__ . '/api.php';
         <!-- Main Glass Panel -->
         <div class="glass-panel p-5 flex flex-col gap-4">
 
-            <!-- Nav Tabs -->
-            <div class="flex gap-0 border-b mb-1" style="border-color:var(--glass-border)">
-                <button class="tab-active btn-tab" data-tab="text">TEXT</button>
-                <button class="btn-tab" data-tab="files">FILES</button>
+            <!-- Nav Tabs & Actions -->
+            <div class="flex justify-between items-center border-b mb-1 pb-1" style="border-color:var(--glass-border)">
+                <div class="flex gap-0">
+                    <button class="tab-active btn-tab" data-tab="text">TEXT</button>
+                    <button class="btn-tab" data-tab="files">FILES</button>
+                </div>
+                <div id="text-actions" class="flex gap-2">
+                    <button class="btn" id="btn-save" style="padding: 3px 10px !important; font-size: 10px !important; min-height: 1.8rem !important;">ENCRYPT &amp; SYNC</button>
+                    <button class="btn btn-red" id="btn-clear" style="padding: 3px 10px !important; font-size: 10px !important; min-height: 1.8rem !important;">CLEAR</button>
+                </div>
             </div>
 
             <!-- Tab content: TEXT -->
@@ -77,11 +83,7 @@ require_once __DIR__ . '/api.php';
                         <span id="char-count" class="mono text-xs" style="color:var(--text-muted)">0</span>
                     </div>
                 </div>
-                <div class="flex items-center justify-between flex-wrap gap-2">
-                    <div class="flex gap-2">
-                        <button class="btn" id="btn-save">ENCRYPT &amp; SYNC</button>
-                        <button class="btn btn-red" id="btn-clear">CLEAR</button>
-                    </div>
+                <div class="flex items-center justify-end">
                     <div id="sync-indicator" class="mono text-xs" style="color:var(--text-muted)">—</div>
                 </div>
             </div>

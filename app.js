@@ -89,30 +89,23 @@ async function hashRoomId(id) {
 }
 
 // ── URL & Init ───────────────────────────────────────────────
-function genRoomId() {
-    return Array.from(crypto.getRandomValues(new Uint8Array(8)))
-        .map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 function genKey() {
-    return Array.from(crypto.getRandomValues(new Uint8Array(24)))
+    return Array.from(crypto.getRandomValues(new Uint8Array(32)))
         .map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 async function loadFromHash() {
     let hash = location.hash.slice(1);
-    if (!hash || !hash.includes(':')) {
-        // Fresh session — generate new room
-        roomId = genRoomId();
+    if (!hash || hash.length < 16) {
+        // Fresh session — generate new key
         const keyRaw = genKey();
-        location.hash = `${roomId}:${keyRaw}`;
+        location.hash = keyRaw;
         return;
     }
-    const [id, keyRaw] = hash.split(':');
-    roomId = id;
-    cryptoKey = await deriveKey(keyRaw);
+    roomId = hash.slice(0, 8);
+    cryptoKey = await deriveKey(hash);
     document.getElementById('room-display').textContent = roomId;
-    log(`ROOM LOADED: ${roomId}`, 'ok');
+    log(`SESSION LOADED: ${roomId}`, 'ok');
     setStatus('sync', 'SYNCING');
     await pollText();
     await loadFiles();
@@ -587,6 +580,12 @@ document.querySelectorAll('[data-tab]').forEach(btn => {
             document.getElementById('tab-' + t).classList.toggle('hidden', t !== btn.dataset.tab);
         });
 
+        // Show/hide action buttons (ENCRYPT & SYNC, CLEAR) when switching tabs
+        const textActions = document.getElementById('text-actions');
+        if (textActions) {
+            textActions.classList.toggle('hidden', btn.dataset.tab !== 'text');
+        }
+
         if (btn.dataset.tab === 'files') loadFiles();
     });
 });
@@ -601,12 +600,11 @@ document.getElementById('btn-clear').addEventListener('click', async () => {
 });
 
 document.getElementById('btn-new-room').addEventListener('click', async () => {
-    const confirmed = await showConfirm('Generate a new room? The current room link will no longer be accessible from this tab.');
+    const confirmed = await showConfirm('Generate a new session? The current session link will no longer be accessible from this tab.');
     if (!confirmed) return;
     stopPolling();
-    const id = genRoomId();
     const k = genKey();
-    location.hash = `${id}:${k}`;
+    location.hash = k;
 });
 
 document.getElementById('btn-copy-url').addEventListener('click', () => {
