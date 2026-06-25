@@ -136,11 +136,18 @@ if (editor) {
             
             const barLength = 5;
             const filledLength = Math.min(barLength, Math.floor(elapsed / 1000));
-            const emptyLength = barLength - filledLength;
-            const bar = '█'.repeat(filledLength) + '\u00A0'.repeat(emptyLength);
+            
+            let barHTML = '';
+            for (let i = 0; i < barLength; i++) {
+                if (i < filledLength) {
+                    barHTML += '<span style="display:inline-block; width:8px; height:10px; background:currentColor; margin-left:1px; margin-right:1px; vertical-align:-1px;"></span>';
+                } else {
+                    barHTML += '<span style="display:inline-block; width:8px; height:10px; background:transparent; border:1px solid currentColor; opacity:0.2; margin-left:1px; margin-right:1px; vertical-align:-1px;"></span>';
+                }
+            }
             
             if (indicator) {
-                indicator.textContent = `WAITING TO SYNC [${bar}]`;
+                indicator.innerHTML = `WAITING TO SYNC [${barHTML}]`;
                 indicator.style.color = 'var(--accent-primary)';
             }
         };
