@@ -2,7 +2,7 @@
 
 import { state } from './state.js';
 import { log } from './logger.js';
-import { hashRoomId, encrypt, decrypt, encryptBuf, decryptBuf } from './crypto.js';
+import { hashRoomId, encrypt, decrypt, encryptBuf, decryptBuf, bufToB64 } from './crypto.js';
 import { setStatus, setProgress, setProgressVal, updateCharCount, renderFiles, fmtSize } from './ui.js';
 import { diff_match_patch } from './diff-match-patch.js';
 
@@ -282,10 +282,13 @@ export async function uploadFile(file) {
         const { data: encBuf, iv: encIv } = await encryptBuf(state.cryptoKey, buffer);
         buffer = null; // OOM protection
 
-        setProgressVal(60, 'ENCRYPTING METADATA...');
-
-        // Encrypt metadata (filename + MIME)
-        const meta = JSON.stringify({ name: file.name, type: file.type, size: file.size });
+        // Encrypt metadata (filename + MIME + file IV)
+        const meta = JSON.stringify({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            iv_file: bufToB64(encIv)
+        });
         const { data: encMeta, iv: ivMeta } = await encrypt(state.cryptoKey, meta);
 
         setProgressVal(70, 'UPLOADING...');
@@ -364,20 +367,24 @@ export async function downloadFile(fileId, encMeta, ivMeta, fileName) {
         if (res.status === 410) { log(`FILE EXPIRED OR CONSUMED`, 'warn'); await loadFiles(); return; }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const encIvB64 = res.headers.get('X-Encrypted-Meta-IV') || ivMeta;
-
         let encBuf = await res.arrayBuffer();
         log(`DECRYPTING: ${fileName}`, '');
 
-        const plainBuf = await decryptBuf(state.cryptoKey, encBuf, encIvB64);
-        encBuf = null; // OOM protection
-
-        // Recover MIME from metadata
+        // Recover file IV and MIME from metadata
+        let fileIv = ivMeta; // fallback
         let mime = 'application/octet-stream';
         try {
             const meta = JSON.parse(await decrypt(state.cryptoKey, encMeta, ivMeta));
             mime = meta.type || mime;
-        } catch { }
+            if (meta.iv_file) {
+                fileIv = meta.iv_file;
+            }
+        } catch (err) {
+            log(`METADATA DECRYPT ERR: ${err.message}`, 'warn');
+        }
+
+        const plainBuf = await decryptBuf(state.cryptoKey, encBuf, fileIv);
+        encBuf = null; // OOM protection
 
         // Trigger browser download
         const blob = new Blob([plainBuf], { type: mime });

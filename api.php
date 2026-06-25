@@ -173,13 +173,26 @@ function action_get_text(): void {
 function action_upload_file(): void {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error(405, 'method_not_allowed');
 
+    // Detect if POST size exceeded limits (which empties $_POST and $_FILES)
+    if (empty($_POST) && empty($_FILES) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+        $max_post = ini_get('post_max_size');
+        json_error(400, "post_max_size_exceeded (limit: $max_post)");
+    }
+
     $room_hash      = validate_hash($_POST['room_hash'] ?? '');
     $encrypted_meta = $_POST['encrypted_meta'] ?? '';
     $iv_meta        = $_POST['iv_meta'] ?? '';
     $file           = $_FILES['file'] ?? null;
 
     if (!$encrypted_meta || !$iv_meta || !$file) json_error(400, 'missing_fields');
-    if ($file['error'] !== UPLOAD_ERR_OK)         json_error(400, 'upload_error');
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        if ($file['error'] === UPLOAD_ERR_INI_SIZE) {
+            $max_upload = ini_get('upload_max_filesize');
+            json_error(400, "upload_max_filesize_exceeded (limit: $max_upload)");
+        }
+        json_error(400, 'upload_error_code_' . $file['error']);
+    }
     if ($file['size'] > MAX_FILE)                 json_error(413, 'file_too_large');
 
     if (!is_dir(UPLOAD_DIR)) mkdir(UPLOAD_DIR, 0750, true);
