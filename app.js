@@ -526,6 +526,35 @@ function updateCharCount() {
     document.getElementById('char-count').textContent = v.length.toLocaleString();
 }
 
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const msgEl = document.getElementById('confirm-message');
+        const okBtn = document.getElementById('btn-confirm-ok');
+        const cancelBtn = document.getElementById('btn-confirm-cancel');
+
+        msgEl.textContent = message;
+        modal.classList.remove('hidden');
+
+        function cleanup(result) {
+            modal.classList.add('hidden');
+            okBtn.onclick = null;
+            cancelBtn.onclick = null;
+            document.removeEventListener('keydown', handleEsc);
+            resolve(result);
+        }
+
+        function handleEsc(e) {
+            if (e.key === 'Escape') cleanup(false);
+        }
+
+        okBtn.onclick = () => cleanup(true);
+        cancelBtn.onclick = () => cleanup(false);
+        document.addEventListener('keydown', handleEsc);
+    });
+}
+
+
 // ── Drag & Drop ──────────────────────────────────────────────
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
@@ -571,8 +600,9 @@ document.getElementById('btn-clear').addEventListener('click', async () => {
     await saveText();
 });
 
-document.getElementById('btn-new-room').addEventListener('click', () => {
-    if (!confirm('Generate a new room? The current room link will no longer be accessible from this tab.')) return;
+document.getElementById('btn-new-room').addEventListener('click', async () => {
+    const confirmed = await showConfirm('Generate a new room? The current room link will no longer be accessible from this tab.');
+    if (!confirmed) return;
     stopPolling();
     const id = genRoomId();
     const k = genKey();

@@ -537,3 +537,16 @@ textarea::placeholder {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.15);
 }
+
+/* ============================================================
+   CONFIRMATION MODAL
+   ============================================================ */
+#confirm-modal {
+    transition: opacity var(--transition-fast) ease-in-out;
+}
+
+#confirm-modal .glass-panel {
+    border-color: rgba(234, 179, 8, 0.25) !important;
+    box-shadow: 0 0 25px rgba(234, 179, 8, 0.15), var(--shadow-card) !important;
+    background: rgba(10, 10, 10, 0.9) !important;
+}

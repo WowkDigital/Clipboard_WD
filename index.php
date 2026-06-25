@@ -127,6 +127,21 @@ require_once __DIR__ . '/api.php';
 
     </main>
 
+    <!-- Custom Retro Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/85 backdrop-blur-sm hidden">
+        <div class="glass-panel p-6 max-w-sm w-full mx-4 flex flex-col gap-4">
+            <div class="mono text-xs flex items-center gap-1.5 pb-2 border-b" style="border-color:var(--glass-border)">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
+                <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">SYS://CONFIRM</span>
+            </div>
+            <p id="confirm-message" class="mono text-sm leading-relaxed" style="color:var(--text-main)"></p>
+            <div class="flex justify-end gap-3 mt-2">
+                <button id="btn-confirm-cancel" class="btn">CANCEL</button>
+                <button id="btn-confirm-ok" class="btn btn-red">PROCEED</button>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 
