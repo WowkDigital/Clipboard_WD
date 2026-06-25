@@ -20,6 +20,7 @@ let textExpiresTimer = null;
 let fileTimers = {};
 let isSaving = false;
 let countdowns = {};
+let autoSaveTimer = null;
 
 // ── Log ──────────────────────────────────────────────────────
 function log(msg, type = '') {
@@ -121,6 +122,10 @@ async function loadFromHash() {
 window.addEventListener('hashchange', () => {
     stopPolling();
     clearCountdowns();
+    if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = null;
+    }
     lastModified = '';
     cryptoKey = null;
     document.getElementById('editor').value = '';
@@ -200,6 +205,10 @@ async function pollText() {
 // ── Save Text ────────────────────────────────────────────────
 async function saveText() {
     if (!cryptoKey || isSaving) return;
+    if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = null;
+    }
     const plaintext = document.getElementById('editor').value;
     isSaving = true;
     const btn = document.getElementById('btn-save');
@@ -585,7 +594,20 @@ document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveText(); }
 });
 
-document.getElementById('editor').addEventListener('input', updateCharCount);
+document.getElementById('editor').addEventListener('input', () => {
+    updateCharCount();
+    
+    // Clear existing auto-save timer
+    if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+    }
+    
+    document.getElementById('sync-indicator').textContent = 'WAITING TO SYNC...';
+    
+    autoSaveTimer = setTimeout(async () => {
+        await saveText();
+    }, 5000);
+});
 
 // ── Boot ─────────────────────────────────────────────────────
 (async () => {
