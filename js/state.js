@@ -8,4 +8,5 @@ export const state = {
     isSaving: false,
     countdowns: {},
     autoSaveTimer: null,
+    autoSaveInterval: null,
 };

@@ -45,6 +45,10 @@ window.addEventListener('hashchange', () => {
         clearTimeout(state.autoSaveTimer);
         state.autoSaveTimer = null;
     }
+    if (state.autoSaveInterval) {
+        clearInterval(state.autoSaveInterval);
+        state.autoSaveInterval = null;
+    }
     state.lastModified = '';
     state.cryptoKey = null;
     
@@ -114,17 +118,47 @@ if (editor) {
     editor.addEventListener('input', () => {
         updateCharCount();
         
-        // Clear existing auto-save timer
+        // Clear existing auto-save timer & interval
         if (state.autoSaveTimer) {
             clearTimeout(state.autoSaveTimer);
         }
+        if (state.autoSaveInterval) {
+            clearInterval(state.autoSaveInterval);
+            state.autoSaveInterval = null;
+        }
         
         const indicator = document.getElementById('sync-indicator');
-        if (indicator) indicator.textContent = 'WAITING TO SYNC...';
+        const duration = 5000;
+        const startTime = Date.now();
+        
+        const updateProgressBar = () => {
+            const elapsed = Date.now() - startTime;
+            
+            const barLength = 5;
+            const filledLength = Math.min(barLength, Math.floor(elapsed / 1000));
+            const emptyLength = barLength - filledLength;
+            const bar = '█'.repeat(filledLength) + '\u00A0'.repeat(emptyLength);
+            
+            if (indicator) {
+                indicator.textContent = `WAITING TO SYNC [${bar}]`;
+                indicator.style.color = 'var(--accent-primary)';
+            }
+        };
+
+        updateProgressBar();
+        
+        state.autoSaveInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            updateProgressBar();
+            if (elapsed >= duration) {
+                clearInterval(state.autoSaveInterval);
+                state.autoSaveInterval = null;
+            }
+        }, 100);
         
         state.autoSaveTimer = setTimeout(async () => {
             await saveText();
-        }, 5000);
+        }, duration);
     });
 }
 

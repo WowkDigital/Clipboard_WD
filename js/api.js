@@ -75,6 +75,10 @@ export async function saveText() {
         clearTimeout(state.autoSaveTimer);
         state.autoSaveTimer = null;
     }
+    if (state.autoSaveInterval) {
+        clearInterval(state.autoSaveInterval);
+        state.autoSaveInterval = null;
+    }
     const editor = document.getElementById('editor');
     if (!editor) return;
     const plaintext = editor.value;
@@ -85,7 +89,10 @@ export async function saveText() {
         btn.textContent = 'ENCRYPTING...';
     }
     const indicator = document.getElementById('sync-indicator');
-    if (indicator) indicator.textContent = 'ENCRYPTING';
+    if (indicator) {
+        indicator.textContent = 'ENCRYPTING';
+        indicator.style.color = 'var(--accent-primary)';
+    }
 
     try {
         const { data, iv } = await encrypt(state.cryptoKey, plaintext);
@@ -101,14 +108,20 @@ export async function saveText() {
         if (!json.ok) throw new Error(json.error);
 
         state.lastModified = '';
-        if (indicator) indicator.textContent = '[SYNCED]';
+        if (indicator) {
+            indicator.textContent = '[SYNCED]';
+            indicator.style.color = 'var(--success)';
+        }
         log('TEXT SYNCED', 'ok');
         if (json.expires_in !== undefined) startTextExpiry(json.expires_in);
         setStatus('online', 'ONLINE');
 
     } catch (e) {
         log(`SAVE ERR: ${e.message}`, 'err');
-        if (indicator) indicator.textContent = 'ERROR';
+        if (indicator) {
+            indicator.textContent = 'ERROR';
+            indicator.style.color = 'var(--error)';
+        }
         setStatus('offline', 'OFFLINE');
     } finally {
         state.isSaving = false;
