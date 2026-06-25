@@ -138,7 +138,7 @@ function setStatus(state, label) {
     const dot = document.getElementById('status-dot');
     const txt = document.getElementById('status-text');
     txt.textContent = label;
-    const colors = { online: '#00ff41', sync: '#ffb300', offline: '#ff3b3b', idle: '#2a3830' };
+    const colors = { online: '#10b981', sync: '#eab308', offline: '#ef4444', idle: '#525252' };
     dot.style.background = colors[state] || colors.idle;
     dot.classList.toggle('pulse', state === 'sync');
 }
@@ -547,12 +547,12 @@ document.querySelectorAll('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-tab]').forEach(b => {
             b.classList.remove('tab-active');
-            b.style.color = 'var(--text-dim)';
-            b.style.borderBottom = '1px solid transparent';
+            b.style.color = 'var(--text-secondary)';
+            b.style.borderBottom = '2px solid transparent';
         });
         btn.classList.add('tab-active');
-        btn.style.color = 'var(--green)';
-        btn.style.borderBottom = '1px solid var(--green)';
+        btn.style.color = 'var(--accent-primary)';
+        btn.style.borderBottom = '2px solid var(--accent-primary)';
 
         ['text', 'files'].forEach(t => {
             document.getElementById('tab-' + t).classList.toggle('hidden', t !== btn.dataset.tab);

@@ -1,40 +1,94 @@
+/* ============================================================
+   VOID://CLIPBOARD — Premium Liminal OS Redesign Style
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap');
+
 :root {
-    --bg: #080a0c;
-    --surface: #0d1117;
-    --border: #1c2a1e;
-    --border-hi: #2a4a2e;
-    --green: #00ff41;
-    --green-dim: #00c032;
-    --green-faint: #0a2010;
-    --amber: #ffb300;
-    --red: #ff3b3b;
-    --text: #c8d8c0;
-    --text-dim: #4a6050;
-    --text-muted: #2a3830;
+    --bg-core: #050505;
+    --bg-grad-start: #0f1014;
+    --bg-grad-end: #000000;
+
+    /* Glassmorphism */
+    --glass-panel: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.06);
+    --glass-heavy: rgba(10, 10, 10, 0.85);
+    --glass-light: rgba(255, 255, 255, 0.02);
+
+    /* Text Colors */
+    --text-main: #f0f0f0;
+    --text-secondary: #9ca3af;
+    --text-muted: #525252;
+    --text-dim: #9ca3af; /* compatibility mapping */
+
+    /* Accents (Amber / Gold) */
+    --accent-primary: #eab308;        /* Amber 500 */
+    --accent-glow: rgba(234, 179, 8, 0.25);
+    --accent-dim: #854d0e;
+    --amber: #eab308;
+
+    /* Statuses / States */
+    --success: #10b981;
+    --error: #ef4444;
+    --red: #ef4444;
+
+    /* Typography */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-title: 'VT323', monospace;
+
+    /* Borders & Radius */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 24px;
+
+    /* Transitions & Shadows */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
 }
 
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html,
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
+    height: 100%;
+    background-color: var(--bg-core);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+body {
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(30, 30, 35, 0.4) 0%, transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(20, 20, 25, 0.4) 0%, transparent 25%);
+    background-attachment: fixed;
+    position: relative;
 }
 
 .mono {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-mono) !important;
 }
 
-/* Scanline overlay */
-body::after {
-    content: '';
+/* ============================================================
+   CRT & NOISE OVERLAYS
+   ============================================================ */
+#crt-overlay {
     position: fixed;
     inset: 0;
+    z-index: 100;
     pointer-events: none;
-    z-index: 9999;
     background: repeating-linear-gradient(0deg,
             transparent,
             transparent 2px,
@@ -42,188 +96,232 @@ body::after {
             rgba(0, 0, 0, 0.08) 4px);
 }
 
-/* Phosphor glow on green elements */
+#crt-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent, rgba(234, 179, 8, 0.02), transparent);
+    height: 120px;
+    animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(-120px);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+#scene-vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+#scene-noise {
+    position: fixed;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 1;
+}
+
+/* ============================================================
+   TYPOGRAPHY EFFECTS & ANIMS
+   ============================================================ */
 .glow {
-    text-shadow: 0 0 8px var(--green), 0 0 20px rgba(0, 255, 65, 0.3);
+    text-shadow: 0 0 8px var(--accent-primary), 0 0 20px rgba(234, 179, 8, 0.3);
 }
 
 .glow-border {
-    box-shadow: 0 0 0 1px var(--border-hi), 0 0 12px rgba(0, 255, 65, 0.08) inset;
+    box-shadow: 0 0 0 1px var(--glass-border), 0 0 12px rgba(234, 179, 8, 0.08) inset;
 }
 
-/* Status indicator pulse */
 @keyframes pulse-dot {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.2;
-    }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.9); }
 }
 
 .pulse {
-    animation: pulse-dot 1.4s ease-in-out infinite;
+    animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
-/* Blink cursor */
 @keyframes blink {
-
-    0%,
-    100% {
-        opacity: 1
-    }
-
-    50% {
-        opacity: 0
-    }
+    50% { opacity: 0; }
 }
 
 .cursor::after {
     content: '█';
     animation: blink 1s step-end infinite;
-    margin-left: 2px;
+    margin-left: 4px;
+    color: var(--accent-primary);
+    text-shadow: 0 0 6px var(--accent-glow);
 }
 
-/* Tab active */
-.tab-active {
-    color: var(--green);
-    border-bottom: 1px solid var(--green);
-    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+/* ============================================================
+   HUD BAR
+   ============================================================ */
+#hud-bar {
+    position: relative;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1.5rem;
+    background: rgba(10, 10, 10, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    gap: 0.5rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-soft);
 }
 
-/* Text area */
+.hud-left,
+.hud-center,
+.hud-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hud-logo {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hud-logo::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-primary);
+    border-radius: 50%;
+}
+
+.hud-logo-dim {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.hud-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    padding: 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    background: var(--glass-panel);
+    line-height: 1;
+    transition: var(--transition-fast);
+    gap: 0.3rem;
+    cursor: default;
+}
+
+/* Badge-style buttons */
+.hud-badge-btn {
+    cursor: pointer;
+    background: var(--glass-panel);
+    border: 1px solid var(--glass-border);
+}
+
+.hud-badge-btn:hover {
+    background: var(--glass-highlight);
+    border-color: var(--accent-primary);
+    color: var(--text-main);
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
+}
+
+.hud-badge-btn:active {
+    transform: scale(0.96);
+}
+
+/* ============================================================
+   GLASS PANEL CONTAINER
+   ============================================================ */
+.glass-panel {
+    background: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+}
+
+/* ============================================================
+   TAB SYSTEM
+   ============================================================ */
+.btn-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.65rem 1.4rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.btn-tab:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.btn-tab.tab-active {
+    color: var(--accent-primary) !important;
+    border-bottom: 2px solid var(--accent-primary) !important;
+    text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ============================================================
+   TEXT AREA & WRAPPER
+   ============================================================ */
 textarea {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
+    background: rgba(5, 5, 5, 0.65) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-sm) !important;
     outline: none;
     resize: none;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-mono) !important;
     font-size: 13px;
     line-height: 1.6;
-    transition: border-color 0.2s;
+    transition: all var(--transition-fast);
+    padding: 1.1rem;
 }
 
 textarea:focus {
-    border-color: var(--border-hi);
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.05) inset;
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.08) inset, 0 0 8px rgba(234, 179, 8, 0.05);
 }
 
 textarea::selection {
-    background: rgba(0, 255, 65, 0.2);
+    background: rgba(234, 179, 8, 0.2);
 }
 
 textarea::placeholder {
     color: var(--text-muted);
-}
-
-/* Drop zone */
-#drop-zone {
-    border: 1px dashed var(--border-hi);
-    background: var(--surface);
-    transition: border-color 0.2s, background 0.2s;
-}
-
-#drop-zone.drag-over {
-    border-color: var(--green);
-    background: var(--green-faint);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.1) inset;
-}
-
-/* Progress bar */
-#progress-bar {
-    background: linear-gradient(90deg, var(--green), var(--green-dim));
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
-    transition: width 0.1s linear;
-}
-
-/* File item */
-.file-item {
-    border: 1px solid var(--border);
-    background: var(--surface);
-}
-
-.file-item:hover {
-    border-color: var(--border-hi);
-}
-
-/* Log lines */
-#log {
-    max-height: 80px;
-    overflow-y: auto;
-}
-
-#log::-webkit-scrollbar {
-    width: 3px;
-}
-
-#log::-webkit-scrollbar-thumb {
-    background: var(--border-hi);
-}
-
-.log-line {
-    font-size: 11px;
-    color: var(--text-dim);
-}
-
-.log-line.ok {
-    color: var(--green-dim);
-}
-
-.log-line.err {
-    color: var(--red);
-}
-
-.log-line.warn {
-    color: var(--amber);
-}
-
-/* Button */
-.btn {
-    background: transparent;
-    border: 1px solid var(--border-hi);
-    color: var(--green);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    padding: 6px 16px;
-    cursor: pointer;
-    transition: background 0.15s, box-shadow 0.15s;
-}
-
-.btn:hover {
-    background: var(--green-faint);
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
-}
-
-.btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.btn-red {
-    border-color: var(--red);
-    color: var(--red);
-}
-
-.btn-red:hover {
-    background: rgba(255, 59, 59, 0.08);
-}
-
-/* Share URL box */
-#share-url {
-    background: var(--surface);
-    border: 1px solid var(--border-hi);
-    color: var(--green);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    padding: 8px 12px;
-    overflow-x: auto;
-    white-space: nowrap;
-    letter-spacing: 0.03em;
 }
 
 /* Countdown */
@@ -231,34 +329,211 @@ textarea::placeholder {
     font-variant-numeric: tabular-nums;
 }
 
-/* Scrollbar global */
-::-webkit-scrollbar {
-    width: 4px;
+/* ============================================================
+   DROP ZONE (File upload)
+   ============================================================ */
+#drop-zone {
+    border: 1px dashed var(--glass-border) !important;
+    border-radius: var(--radius-md) !important;
+    background: rgba(5, 5, 5, 0.4) !important;
+    transition: all var(--transition-fast);
 }
 
-::-webkit-scrollbar-track {
-    background: var(--bg);
+#drop-zone:hover {
+    border-color: rgba(234, 179, 8, 0.4) !important;
+    background: var(--glass-panel) !important;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--border-hi);
+#drop-zone.drag-over {
+    border-color: var(--accent-primary) !important;
+    background: rgba(234, 179, 8, 0.06) !important;
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.1) inset;
 }
 
-/* Copy flash */
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+#progress-wrap .w-full {
+    height: 6px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid var(--glass-border) !important;
+    overflow: hidden;
+}
+
+#progress-bar {
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent-primary)) !important;
+    box-shadow: 0 0 8px rgba(234, 179, 8, 0.4) !important;
+    transition: width 0.1s linear;
+}
+
+/* ============================================================
+   FILE ITEM CARDS
+   ============================================================ */
+.file-item {
+    border: 1px solid var(--glass-border) !important;
+    background: var(--glass-panel) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 0.75rem 1rem !important;
+    transition: all var(--transition-fast);
+}
+
+.file-item:hover {
+    border-color: rgba(234, 179, 8, 0.3) !important;
+    background: var(--glass-highlight) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   TERMINAL LOG PANEL
+   ============================================================ */
+#log {
+    background: rgba(5, 5, 5, 0.5) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 0.75rem 1rem !important;
+    max-height: 90px !important;
+    overflow-y: auto;
+    font-family: var(--font-mono) !important;
+}
+
+#log::-webkit-scrollbar {
+    width: 3px;
+}
+
+#log::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 2px;
+}
+
+.log-line {
+    font-size: 11px;
+    font-family: var(--font-mono) !important;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.log-line.ok {
+    color: var(--success) !important;
+    text-shadow: 0 0 6px rgba(16, 185, 129, 0.15);
+}
+
+.log-line.err {
+    color: var(--error) !important;
+    text-shadow: 0 0 6px rgba(239, 68, 68, 0.15);
+}
+
+.log-line.warn {
+    color: var(--accent-primary) !important;
+    text-shadow: 0 0 6px rgba(234, 179, 8, 0.15);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-secondary) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.03em !important;
+    padding: 0.45rem 1.1rem !important;
+    cursor: pointer;
+    border-radius: var(--radius-sm) !important;
+    transition: all var(--transition-fast) !important;
+    text-transform: uppercase !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+    height: auto !important;
+    min-height: 2.2rem !important;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent-primary);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--transition-fast);
+    z-index: 2;
+}
+
+.btn:hover::before {
+    transform: scaleY(1);
+}
+
+.btn:hover {
+    border-color: var(--accent-primary) !important;
+    color: var(--text-main) !important;
+    background: rgba(234, 179, 8, 0.04) !important;
+    box-shadow: 0 4px 15px rgba(234, 179, 8, 0.12) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn:active {
+    transform: translateY(0px) scale(0.97) !important;
+}
+
+.btn:disabled {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+.btn-red {
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: var(--error) !important;
+}
+
+.btn-red::before {
+    background: var(--error);
+}
+
+.btn-red:hover {
+    border-color: var(--error) !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Copy Link Flash Animation */
 @keyframes flash-copy {
-    0% {
-        opacity: 1
-    }
-
-    50% {
-        opacity: 0.3
-    }
-
-    100% {
-        opacity: 1
-    }
+    0% { opacity: 1; }
+    50% { opacity: 0.35; }
+    100% { opacity: 1; }
 }
 
 .flash {
-    animation: flash-copy 0.3s ease;
+    animation: flash-copy 0.35s ease;
+}
+
+/* ============================================================
+   SCROLLBAR & GLOBALS
+   ============================================================ */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(5, 5, 5, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
