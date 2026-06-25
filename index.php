@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-// E2EE Private Clipboard — index.php (parsed as index.html)
+// E2EE Private Clipboard — index.php
 // Zero-Knowledge Architecture: server never sees plaintext,
 // filenames, or encryption keys. All secrets live in URL #hash.
 // ============================================================

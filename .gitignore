@@ -1,0 +1,13 @@
+# SQLite databases
+/database.sqlite
+/database.sqlite-journal
+/database.sqlite-shm
+/database.sqlite-wal
+
+# Uploaded files
+/uploads/
+!/uploads/.htaccess
+
+# OS generated files
+.DS_Store
+Thumbs.db
