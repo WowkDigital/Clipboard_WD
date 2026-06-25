@@ -1,0 +1,264 @@
+:root {
+    --bg: #080a0c;
+    --surface: #0d1117;
+    --border: #1c2a1e;
+    --border-hi: #2a4a2e;
+    --green: #00ff41;
+    --green-dim: #00c032;
+    --green-faint: #0a2010;
+    --amber: #ffb300;
+    --red: #ff3b3b;
+    --text: #c8d8c0;
+    --text-dim: #4a6050;
+    --text-muted: #2a3830;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+}
+
+.mono {
+    font-family: 'Share Tech Mono', monospace;
+}
+
+/* Scanline overlay */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.08) 2px,
+            rgba(0, 0, 0, 0.08) 4px);
+}
+
+/* Phosphor glow on green elements */
+.glow {
+    text-shadow: 0 0 8px var(--green), 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+.glow-border {
+    box-shadow: 0 0 0 1px var(--border-hi), 0 0 12px rgba(0, 255, 65, 0.08) inset;
+}
+
+/* Status indicator pulse */
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
+
+.pulse {
+    animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+/* Blink cursor */
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: 0
+    }
+}
+
+.cursor::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+}
+
+/* Tab active */
+.tab-active {
+    color: var(--green);
+    border-bottom: 1px solid var(--green);
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+}
+
+/* Text area */
+textarea {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    outline: none;
+    resize: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+}
+
+textarea:focus {
+    border-color: var(--border-hi);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.05) inset;
+}
+
+textarea::selection {
+    background: rgba(0, 255, 65, 0.2);
+}
+
+textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* Drop zone */
+#drop-zone {
+    border: 1px dashed var(--border-hi);
+    background: var(--surface);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+#drop-zone.drag-over {
+    border-color: var(--green);
+    background: var(--green-faint);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.1) inset;
+}
+
+/* Progress bar */
+#progress-bar {
+    background: linear-gradient(90deg, var(--green), var(--green-dim));
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+    transition: width 0.1s linear;
+}
+
+/* File item */
+.file-item {
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.file-item:hover {
+    border-color: var(--border-hi);
+}
+
+/* Log lines */
+#log {
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+#log::-webkit-scrollbar {
+    width: 3px;
+}
+
+#log::-webkit-scrollbar-thumb {
+    background: var(--border-hi);
+}
+
+.log-line {
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+.log-line.ok {
+    color: var(--green-dim);
+}
+
+.log-line.err {
+    color: var(--red);
+}
+
+.log-line.warn {
+    color: var(--amber);
+}
+
+/* Button */
+.btn {
+    background: transparent;
+    border: 1px solid var(--border-hi);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.btn:hover {
+    background: var(--green-faint);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+.btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.btn-red {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.btn-red:hover {
+    background: rgba(255, 59, 59, 0.08);
+}
+
+/* Share URL box */
+#share-url {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+}
+
+/* Countdown */
+.countdown {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar global */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-hi);
+}
+
+/* Copy flash */
+@keyframes flash-copy {
+    0% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: 0.3
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
+.flash {
+    animation: flash-copy 0.3s ease;
+}
