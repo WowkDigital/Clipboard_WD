@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { log } from './logger.js';
 import { decrypt } from './crypto.js';
-import { uploadFile, downloadFile, loadFiles } from './api.js';
+import { uploadFile, downloadFile, loadFiles, deleteFile } from './api.js';
 
 // ── Status ───────────────────────────────────────────────────
 export function setStatus(statusState, label) {
@@ -88,11 +88,19 @@ export function showConfirm(message) {
     });
 }
 
+let lastRenderedIds = '';
+
 // ── File Rendering ────────────────────────────────────────────
 export function renderFiles(files) {
     const list = document.getElementById('file-list');
     const empty = document.getElementById('files-empty');
     if (!list || !empty) return;
+
+    const currentIds = (files || []).map(f => f.file_id).sort().join(',');
+    if (currentIds === lastRenderedIds) {
+        return;
+    }
+    lastRenderedIds = currentIds;
 
     // Clear old countdown timers
     clearCountdowns();
@@ -129,10 +137,18 @@ export function renderFiles(files) {
         dlBtn.style.padding = '3px 10px';
         dlBtn.style.fontSize = '10px';
 
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn btn-red';
+        delBtn.textContent = 'DELETE';
+        delBtn.style.padding = '3px 10px';
+        delBtn.style.fontSize = '10px';
+        delBtn.style.marginLeft = '5px';
+
         item.appendChild(nameEl);
         item.appendChild(sizeEl);
         item.appendChild(cdEl);
         item.appendChild(dlBtn);
+        item.appendChild(delBtn);
         list.appendChild(item);
 
         // Decrypt metadata client-side to show filename
@@ -142,8 +158,22 @@ export function renderFiles(files) {
                 nameEl.textContent = meta.name;
                 sizeEl.textContent = fmtSize(meta.size);
                 dlBtn.onclick = () => downloadFile(f.file_id, f.encrypted_meta, f.iv_meta, meta.name);
+                delBtn.onclick = async () => {
+                    const confirmed = await showConfirm(`Delete file "${meta.name}" permanently?`);
+                    if (confirmed) {
+                        await deleteFile(f.file_id, meta.name);
+                    }
+                };
             })
-            .catch(() => { nameEl.textContent = '[encrypted]'; });
+            .catch(() => {
+                nameEl.textContent = '[encrypted]';
+                delBtn.onclick = async () => {
+                    const confirmed = await showConfirm(`Delete this encrypted file permanently?`);
+                    if (confirmed) {
+                        await deleteFile(f.file_id, '[encrypted]');
+                    }
+                };
+            });
     });
 }
 
@@ -167,6 +197,7 @@ export function startFileCountdown(el, seconds) {
 export function clearCountdowns() {
     Object.values(state.countdowns).forEach(clearInterval);
     state.countdowns = {};
+    lastRenderedIds = '';
 }
 
 // ── Initialize Drag & Drop ────────────────────────────────────

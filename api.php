@@ -8,7 +8,7 @@
 define('DB_PATH',      __DIR__ . '/database.sqlite');
 define('UPLOAD_DIR',   __DIR__ . '/uploads/');
 define('TEXT_TTL',     30 * 60);   // 30 min
-define('FILE_TTL',     15 * 60);   // 15 min
+define('FILE_TTL',     30 * 60);   // 30 min
 define('MAX_FILE',     20 * 1024 * 1024); // 20 MB
 define('GC_PROBABILITY', 5);       // % chance of GC per request
 
@@ -40,6 +40,7 @@ function api_dispatch(string $action): void {
             'upload_file'   => action_upload_file(),
             'download_file' => action_download_file(),
             'list_files'    => action_list_files(),
+            'delete_file'   => action_delete_file(),
             default         => json_error(400, 'unknown_action'),
         };
     } catch (Throwable $e) {
@@ -246,10 +247,10 @@ function action_download_file(): void {
 
     if (!$row) json_error(404, 'not_found');
 
-    // Expired or already downloaded
-    if ($row['download_count'] >= 1 || ($now - $row['created_at']) > FILE_TTL) {
+    // Expired
+    if (($now - $row['created_at']) > FILE_TTL) {
         purge_file($db, $file_id);
-        json_error(410, 'expired_or_consumed');
+        json_error(410, 'expired');
     }
 
     $path = UPLOAD_DIR . $file_id;
@@ -260,7 +261,7 @@ function action_download_file(): void {
 
     // Increment download count atomically BEFORE streaming
     $db->exec('BEGIN IMMEDIATE');
-    $upd = $db->prepare('UPDATE files SET download_count = 1 WHERE file_id = :fid');
+    $upd = $db->prepare('UPDATE files SET download_count = download_count + 1 WHERE file_id = :fid');
     $upd->bindValue(':fid', $file_id, SQLITE3_TEXT);
     $upd->execute();
     $db->exec('COMMIT');
@@ -278,14 +279,6 @@ function action_download_file(): void {
     header('X-Encrypted-Meta-IV: ' . $row['iv_meta']);
 
     readfile($path);
-
-    // Sync deletion without relying on shutdown functions
-    @unlink($path);
-    $db->exec('BEGIN IMMEDIATE');
-    $del = $db->prepare('DELETE FROM files WHERE file_id = :fid');
-    $del->bindValue(':fid', $file_id, SQLITE3_TEXT);
-    $del->execute();
-    $db->exec('COMMIT');
     exit;
 }
 
@@ -305,7 +298,7 @@ function action_list_files(): void {
     $files = [];
     while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
         $age = $now - $row['created_at'];
-        if ($row['download_count'] >= 1 || $age > FILE_TTL) {
+        if ($age > FILE_TTL) {
             purge_file($db, $row['file_id']);
             continue;
         }
@@ -319,6 +312,26 @@ function action_list_files(): void {
     }
 
     json_ok(['files' => $files]);
+}
+
+function action_delete_file(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error(405, 'method_not_allowed');
+    $body = json_input();
+    $file_id   = preg_replace('/[^a-f0-9]/', '', $body['file_id'] ?? '');
+    $room_hash = validate_hash($body['room_hash'] ?? '');
+
+    if (strlen($file_id) !== 32) json_error(400, 'invalid_file_id');
+
+    $db  = db();
+    $stmt = $db->prepare('SELECT file_id FROM files WHERE file_id = :fid AND room_hash = :rh');
+    $stmt->bindValue(':fid', $file_id, SQLITE3_TEXT);
+    $stmt->bindValue(':rh',  $room_hash, SQLITE3_TEXT);
+    $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
+    if (!$row) json_error(404, 'not_found');
+
+    purge_file($db, $file_id);
+    json_ok(['deleted' => true]);
 }
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -367,15 +380,15 @@ function gc_run(SQLite3 $db): void {
     // Purge expired text rooms
     $db->exec("DELETE FROM rooms WHERE updated_at < $text_cutoff");
 
-    // Find expired/consumed files
+    // Find expired files
     $res = $db->query("
         SELECT file_id FROM files
-        WHERE created_at < $file_cutoff OR download_count >= 1
+        WHERE created_at < $file_cutoff
     ");
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         @unlink(UPLOAD_DIR . $row['file_id']);
     }
-    $db->exec("DELETE FROM files WHERE created_at < $file_cutoff OR download_count >= 1");
+    $db->exec("DELETE FROM files WHERE created_at < $file_cutoff");
 
     $db->exec('COMMIT');
 

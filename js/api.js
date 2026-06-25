@@ -8,7 +8,7 @@ import { diff_match_patch } from './diff-match-patch.js';
 
 const POLL_INTERVAL = 3000;
 const TEXT_TTL = 30 * 60;
-const FILE_TTL = 15 * 60;
+const FILE_TTL = 30 * 60;
 
 // Helper to update editor value and restore cursor range mapping
 function updateEditorValueAndRestoreCursor(editor, newText) {
@@ -364,7 +364,7 @@ export async function downloadFile(fileId, encMeta, ivMeta, fileName) {
         const rh = await hashRoomId(state.roomId);
         const res = await fetch(`?action=download_file&file_id=${fileId}&room_hash=${rh}`);
 
-        if (res.status === 410) { log(`FILE EXPIRED OR CONSUMED`, 'warn'); await loadFiles(); return; }
+        if (res.status === 410) { log(`FILE EXPIRED`, 'warn'); await loadFiles(); return; }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         let encBuf = await res.arrayBuffer();
@@ -398,5 +398,29 @@ export async function downloadFile(fileId, encMeta, ivMeta, fileName) {
 
     } catch (e) {
         log(`DOWNLOAD ERR: ${e.message}`, 'err');
+    }
+}
+
+export async function deleteFile(fileId, fileName) {
+    if (!state.cryptoKey) return;
+    try {
+        const rh = await hashRoomId(state.roomId);
+        const payload = {
+            file_id: fileId,
+            room_hash: rh
+        };
+        const res = await fetch('?action=delete_file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error);
+
+        log(`FILE DELETED: ${fileName}`, 'ok');
+        await loadFiles();
+    } catch (e) {
+        log(`DELETE ERR: ${e.message}`, 'err');
     }
 }

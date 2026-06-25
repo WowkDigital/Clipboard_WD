@@ -76,7 +76,7 @@ require_once __DIR__ . '/api.php';
             <div id="tab-text" class="flex flex-col gap-4">
                 <div class="relative flex flex-col">
                     <textarea id="editor" rows="14"
-                        placeholder="// paste text, code, or data here — encrypted before leaving your browser"
+                        placeholder="Paste your text here to begin secure synchronization... // HOW IT WORKS:&#10;// 1. End-to-end encryption (AES-GCM) happens in the browser before sending data to the server.&#10;// 2. The decryption key remains in the URL (#hash) and is never transmitted to the server.&#10;// 3. Text data automatically expires 30 minutes after the last update.&#10;// 4. Uploaded files are securely encrypted, have a 30-minute TTL, can be downloaded multiple times, or manually deleted."
                         class="w-full p-4"></textarea>
                     <div class="absolute bottom-3 right-4 flex items-center gap-3 pointer-events-none">
                         <span id="text-expires" class="mono text-xs countdown" style="color:var(--text-muted)"></span>
@@ -96,7 +96,7 @@ require_once __DIR__ . '/api.php';
                     style="min-height:160px">
                     <div class="mono text-sm" style="color:var(--text-dim)">DROP FILE HERE</div>
                     <div class="mono text-xs" style="color:var(--text-muted)">or click to browse · max 20 MB</div>
-                    <div class="mono text-xs" style="color:var(--text-muted)">encrypted client-side · 1 download · 15 min TTL</div>
+                    <div class="mono text-xs" style="color:var(--text-muted)">encrypted client-side · multi-download · 30 min TTL</div>
                     <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
 
