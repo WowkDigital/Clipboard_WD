@@ -144,7 +144,7 @@ require_once __DIR__ . '/api.php';
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 
 </html>
