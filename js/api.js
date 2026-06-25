@@ -4,10 +4,38 @@ import { state } from './state.js';
 import { log } from './logger.js';
 import { hashRoomId, encrypt, decrypt, encryptBuf, decryptBuf } from './crypto.js';
 import { setStatus, setProgress, setProgressVal, updateCharCount, renderFiles, fmtSize } from './ui.js';
+import { diff_match_patch } from './diff-match-patch.js';
 
 const POLL_INTERVAL = 3000;
 const TEXT_TTL = 30 * 60;
 const FILE_TTL = 15 * 60;
+
+// Helper to update editor value and restore cursor range mapping
+function updateEditorValueAndRestoreCursor(editor, newText) {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const oldText = editor.value;
+
+    if (oldText === newText) return;
+
+    if (document.activeElement !== editor) {
+        editor.value = newText;
+        return;
+    }
+
+    try {
+        const dmp = new diff_match_patch();
+        const diffs = dmp.diff_main(oldText, newText);
+        const newStart = dmp.diff_xIndex(diffs, start);
+        const newEnd = dmp.diff_xIndex(diffs, end);
+
+        editor.value = newText;
+        editor.setSelectionRange(newStart, newEnd);
+    } catch (e) {
+        log(`CURSOR MAP ERR: ${e.message}`, 'warn');
+        editor.value = newText;
+    }
+}
 
 // ── Polling ──────────────────────────────────────────────────
 export function startPolling() {
@@ -43,19 +71,63 @@ export async function pollText() {
         if (lm) state.lastModified = lm;
 
         const data = await res.json();
+        const editor = document.getElementById('editor');
+
         if (data.empty) {
             setStatus('online', 'ONLINE');
             clearTextExpiry();
+            
+            // If local text matches the last synced state or user is not focused, clear it
+            if (editor && (editor.value === state.lastSyncedText || document.activeElement !== editor)) {
+                updateEditorValueAndRestoreCursor(editor, '');
+                updateCharCount();
+            }
+            state.lastSyncedText = '';
+            state.lastSyncedTime = 0;
             return;
         }
 
-        // Only update if we're not actively editing
-        if (document.activeElement !== document.getElementById('editor')) {
-            const plain = await decrypt(state.cryptoKey, data.encrypted_data, data.iv);
-            const editor = document.getElementById('editor');
+        const serverText = await decrypt(state.cryptoKey, data.encrypted_data, data.iv);
+
+        if (state.lastSyncedText === null) {
+            // First time loading text in this room/session
+            state.lastSyncedText = serverText;
+            state.lastSyncedTime = data.updated_at;
             if (editor) {
-                editor.value = plain;
+                updateEditorValueAndRestoreCursor(editor, serverText);
                 updateCharCount();
+            }
+        } else if (serverText !== state.lastSyncedText) {
+            // Server version has changed!
+            const localText = editor ? editor.value : '';
+            if (localText !== state.lastSyncedText) {
+                // Collision! Both server and local have modified the text.
+                log('COLLISION DETECTED - MERGING SERVER CHANGES...', 'warn');
+                try {
+                    const dmp = new diff_match_patch();
+                    const patches = dmp.patch_make(state.lastSyncedText, serverText);
+                    const [mergedText, results] = dmp.patch_apply(patches, localText);
+                    
+                    if (editor) {
+                        updateEditorValueAndRestoreCursor(editor, mergedText);
+                        updateCharCount();
+                    }
+                    
+                    // Mark baseline synced to this server text
+                    state.lastSyncedText = serverText;
+                    state.lastSyncedTime = data.updated_at;
+                    log('CHANGES AUTO-MERGED', 'ok');
+                } catch (err) {
+                    log(`MERGE ERR: ${err.message}`, 'err');
+                }
+            } else {
+                // No local modifications, safely update text (with cursor restoration in case of focus)
+                if (editor) {
+                    updateEditorValueAndRestoreCursor(editor, serverText);
+                    updateCharCount();
+                }
+                state.lastSyncedText = serverText;
+                state.lastSyncedTime = data.updated_at;
             }
         }
 
@@ -69,7 +141,7 @@ export async function pollText() {
 }
 
 // ── Save Text ────────────────────────────────────────────────
-export async function saveText() {
+export async function saveText(isRetry = false) {
     if (!state.cryptoKey || state.isSaving) return;
     if (state.autoSaveTimer) {
         clearTimeout(state.autoSaveTimer);
@@ -98,16 +170,47 @@ export async function saveText() {
         const { data, iv } = await encrypt(state.cryptoKey, plaintext);
         const rh = await hashRoomId(state.roomId);
 
+        // Include lastSyncedTime to detect conflict on server
+        const payload = {
+            room_hash: rh,
+            encrypted_data: data,
+            iv: iv,
+            last_updated: state.lastSyncedTime || 0
+        };
+
         const res = await fetch('?action=save_text', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ room_hash: rh, encrypted_data: data, iv }),
+            body: JSON.stringify(payload),
         });
+
+        if (res.status === 409) {
+            if (!isRetry) {
+                log('SYNC CONFLICT DETECTED - MERGING...', 'warn');
+                state.isSaving = false;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'ENCRYPT & SYNC';
+                }
+                // Fetch latest server changes and merge
+                await pollText();
+                // Retry saving merged text
+                await saveText(true);
+                return;
+            } else {
+                throw new Error('Conflict could not be resolved automatically.');
+            }
+        }
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const json = await res.json();
         if (!json.ok) throw new Error(json.error);
 
         state.lastModified = '';
+        state.lastSyncedText = plaintext;
+        state.lastSyncedTime = json.updated_at;
+
         if (indicator) {
             indicator.textContent = '[SYNCED]';
             indicator.style.color = 'var(--success)';

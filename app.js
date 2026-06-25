@@ -51,6 +51,8 @@ window.addEventListener('hashchange', () => {
     }
     state.lastModified = '';
     state.cryptoKey = null;
+    state.lastSyncedText = null;
+    state.lastSyncedTime = 0;
     
     const editor = document.getElementById('editor');
     if (editor) editor.value = '';

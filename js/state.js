@@ -9,4 +9,6 @@ export const state = {
     countdowns: {},
     autoSaveTimer: null,
     autoSaveInterval: null,
+    lastSyncedText: null,
+    lastSyncedTime: 0,
 };

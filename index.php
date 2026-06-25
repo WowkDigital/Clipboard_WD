@@ -49,7 +49,7 @@ require_once __DIR__ . '/api.php';
         </div>
         
         <div class="hud-right">
-            <button class="hud-badge hud-badge-btn" id="btn-new-room">NEW ROOM</button>
+            <button class="hud-badge hud-badge-btn" id="btn-new-room">NEW SESSION</button>
             <button class="hud-badge hud-badge-btn" id="btn-copy-url">COPY LINK</button>
         </div>
     </header>

@@ -88,6 +88,7 @@ function action_save_text(): void {
     $room_hash      = validate_hash($body['room_hash'] ?? '');
     $encrypted_data = $body['encrypted_data'] ?? '';
     $iv             = $body['iv'] ?? '';
+    $last_updated   = isset($body['last_updated']) ? (int)$body['last_updated'] : 0;
 
     if (!$encrypted_data || !$iv) {
         json_error(400, 'missing_fields');
@@ -97,6 +98,18 @@ function action_save_text(): void {
     $now = time();
 
     $db->exec('BEGIN IMMEDIATE');
+
+    // Concurrency conflict detection
+    if ($last_updated > 0) {
+        $stmt = $db->prepare('SELECT updated_at FROM rooms WHERE room_hash = :rh');
+        $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+        $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+        if ($row && $row['updated_at'] > $last_updated) {
+            $db->exec('ROLLBACK');
+            json_error(409, 'conflict');
+        }
+    }
+
     $stmt = $db->prepare('
         INSERT INTO rooms (room_hash, encrypted_data, iv, updated_at)
         VALUES (:rh, :ed, :iv, :ua)
