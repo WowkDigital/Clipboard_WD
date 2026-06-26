@@ -31,7 +31,7 @@ require_once __DIR__ . '/api.php';
     <div id="scene-noise"></div>
 
     <!-- Liminal OS inspired HUD bar -->
-    <header id="hud-bar">
+    <header id="hud-bar" class="flex flex-wrap items-center justify-between gap-y-3 gap-x-2 py-3 px-4">
         <div class="hud-left flex flex-wrap items-center gap-2">
             <span class="hud-logo font-mono text-sm font-bold tracking-wider mr-2">VOID://<span class="hud-logo-dim">CLIPBOARD</span></span>
             
@@ -41,12 +41,12 @@ require_once __DIR__ . '/api.php';
                 <span id="status-text" class="mono text-xs" style="color:var(--text-secondary)">OFFLINE</span>
             </span>
             
-            <span class="hud-badge hidden sm:inline-flex">
+            <span class="hud-badge flex items-center">
                 <span class="mono text-xs" style="color:var(--text-muted)">SESSION ID:</span>
                 <span id="room-display" class="mono text-xs ml-1" style="color:var(--accent-primary); font-weight:bold;">—</span>
             </span>
 
-            <span class="hidden md:inline-flex items-center gap-1.5 px-2" style="font-family:var(--font-mono);">
+            <span class="flex items-center gap-1.5 px-2" style="font-family:var(--font-mono);">
                 <span class="mono text-xs" style="color:var(--text-muted)">TTL:</span>
                 <select id="select-ttl" class="mono text-xs bg-transparent text-main border-none p-0 cursor-pointer outline-none font-bold" style="color:var(--accent-primary); width:auto;">
                     <option value="900" style="background:#0a0a0a; color:#f0f0f0;">15m</option>
@@ -59,14 +59,14 @@ require_once __DIR__ . '/api.php';
                 </select>
             </span>
 
-            <span class="hidden lg:inline-flex items-center px-2" style="font-family:var(--font-mono);">
+            <span class="flex items-center px-2" style="font-family:var(--font-mono);">
                 <span id="session-valid-until" class="mono text-xs" style="color:var(--text-secondary)">valid until: —</span>
             </span>
 
-            <button id="btn-reset-ttl" class="hud-badge hud-badge-btn hidden md:inline-flex">EXTEND TTL</button>
+            <button id="btn-reset-ttl" class="hud-badge hud-badge-btn">EXTEND TTL</button>
         </div>
         
-        <div class="hud-right">
+        <div class="hud-right flex flex-wrap items-center gap-2">
             <button class="hud-badge hud-badge-btn" id="btn-new-room">NEW SESSION</button>
             <button class="hud-badge hud-badge-btn" id="btn-copy-url">COPY LINK</button>
         </div>
