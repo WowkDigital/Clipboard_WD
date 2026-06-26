@@ -550,3 +550,70 @@ textarea::placeholder {
     box-shadow: 0 0 25px rgba(234, 179, 8, 0.15), var(--shadow-card) !important;
     background: rgba(10, 10, 10, 0.9) !important;
 }
+
+/* ============================================================
+   RETRO FOOTER STYLING OVERRIDES
+   ============================================================ */
+.wowk-footer {
+    --wf-bg: transparent !important;
+    --wf-text: var(--text-secondary) !important;
+    --wf-brand: var(--accent-primary) !important;
+    --wf-brand-hover: var(--text-main) !important;
+    --wf-accent: var(--accent-primary) !important;
+    --wf-border: var(--glass-border) !important;
+    
+    font-family: var(--font-mono) !important;
+    border-top: 1px solid var(--glass-border) !important;
+    background: rgba(10, 10, 10, 0.4) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 40px 20px !important;
+    margin-top: auto !important; /* Push footer to bottom of flex layout if needed */
+    z-index: 10;
+}
+
+.wowk-footer__made-with {
+    font-family: var(--font-mono) !important;
+    letter-spacing: 0.15em !important;
+    font-size: 11px !important;
+}
+
+.wowk-footer__heart svg {
+    filter: drop-shadow(0 0 6px var(--accent-glow)) !important;
+}
+
+.wowk-footer__brand-text {
+    font-family: var(--font-mono) !important;
+    letter-spacing: -0.02em !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+}
+
+.wowk-footer__brand:hover svg {
+    filter: drop-shadow(0 0 12px var(--accent-glow)) !important;
+}
+
+.wowk-footer__copyright {
+    font-family: var(--font-mono) !important;
+    letter-spacing: 0.05em !important;
+    font-size: 11px !important;
+    opacity: 0.4 !important;
+}
+
+.wowk-footer__hub-link {
+    font-family: var(--font-mono) !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid var(--glass-border) !important;
+    background: var(--glass-panel) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.1em !important;
+}
+
+.wowk-footer__hub-link:hover {
+    opacity: 1 !important;
+    color: var(--text-main) !important;
+    border-color: var(--accent-primary) !important;
+    background: var(--glass-highlight) !important;
+    box-shadow: 0 0 12px var(--accent-glow) !important;
+}
+

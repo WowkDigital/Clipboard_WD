@@ -163,6 +163,24 @@ require_once __DIR__ . '/api.php';
         </div>
     </div>
 
+    <!-- Load Footer Library -->
+    <script src="https://cdn.jsdelivr.net/gh/WowkDigital/WowkDigitalFooter@latest/wowk-digital-footer.js"></script>
+
+    <!-- Initialize Footer -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        WowkDigitalFooter.init({
+          siteName: 'VOID://CLIPBOARD',
+          container: 'body',
+          brandName: 'Wowk Digital',
+          brandUrl: 'https://github.com/WowkDigital',
+          showHubLink: true,
+          hubUrl: 'https://wowkdigital.github.io/WD_HUB/',
+          theme: 'auto'
+        });
+      });
+    </script>
+
     <script type="module" src="app.js"></script>
 </body>
 
