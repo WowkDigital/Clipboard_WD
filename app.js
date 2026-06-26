@@ -177,6 +177,18 @@ if (editor) {
     });
 }
 
+// Window connectivity events to instantly update status
+window.addEventListener('offline', () => {
+    setStatus('offline', 'OFFLINE');
+    log('BROWSER OFFLINE', 'err');
+});
+window.addEventListener('online', async () => {
+    log('BROWSER ONLINE', 'ok');
+    setStatus('sync', 'SYNCING');
+    await pollText();
+    await loadFiles();
+});
+
 // ── Boot ─────────────────────────────────────────────────────
 (async () => {
     log('VOID://CLIPBOARD INITIALIZED', 'ok');

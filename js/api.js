@@ -421,11 +421,14 @@ export async function loadFiles() {
     try {
         const rh = await hashRoomId(state.roomId);
         const res = await fetch(`?action=list_files&room_hash=${rh}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
 
         renderFiles(data.files);
+        setStatus('online', 'ONLINE');
     } catch (e) {
+        setStatus('offline', 'OFFLINE');
         log(`FILES ERR: ${e.message}`, 'err');
     }
 }
