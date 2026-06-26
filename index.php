@@ -138,12 +138,12 @@ require_once __DIR__ . '/api.php';
                 <span class="flex items-center gap-1.5">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
                     <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">SYS://LOG</span>
-                    <span id="log-toggle-indicator" style="color:var(--text-muted)">[+]</span>
+                    <span id="log-toggle-indicator" style="color:var(--text-muted)">[-]</span>
                 </span>
                 <button id="btn-clear-log" class="mono text-xs"
                     style="color:var(--text-muted);background:none;border:none;cursor:pointer;font-family:inherit;font-size:10px;text-transform:uppercase;">[CLEAR]</button>
             </div>
-            <div id="log" class="flex flex-col gap-0.5 hidden"></div>
+            <div id="log" class="flex flex-col gap-0.5"></div>
         </div>
 
     </main>

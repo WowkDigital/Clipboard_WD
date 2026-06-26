@@ -31,7 +31,7 @@ async function loadFromHash() {
     const display = document.getElementById('room-display');
     if (display) display.textContent = state.roomId;
     
-    log(`SESSION LOADED: ${state.roomId}`, 'ok');
+    log(`SESSION LOADED: ${state.roomId}`, '');
     setStatus('sync', 'SYNCING');
     await pollText();
     await loadFiles();
@@ -204,7 +204,7 @@ if (logHeader && logContainer && logToggleIndicator) {
 
 // ── Boot ─────────────────────────────────────────────────────
 (async () => {
-    log('VOID://CLIPBOARD INITIALIZED', 'ok');
-    log('WEB CRYPTO: ' + (crypto.subtle ? 'AES-GCM READY' : 'UNAVAILABLE — USE HTTPS'), crypto.subtle ? 'ok' : 'err');
+    log('VOID://CLIPBOARD INITIALIZED', '');
+    log('WEB CRYPTO: ' + (crypto.subtle ? 'AES-GCM READY' : 'UNAVAILABLE — USE HTTPS'), crypto.subtle ? '' : 'err');
     await loadFromHash();
 })();
