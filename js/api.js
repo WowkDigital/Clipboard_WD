@@ -131,6 +131,13 @@ export async function pollText() {
             }
         }
 
+        if (data.ttl !== undefined) {
+            const select = document.getElementById('select-ttl');
+            if (select) {
+                select.value = data.ttl;
+            }
+        }
+
         if (data.expires_in !== undefined) startTextExpiry(data.expires_in);
         setStatus('online', 'ONLINE');
 
@@ -170,12 +177,16 @@ export async function saveText(isRetry = false) {
         const { data, iv } = await encrypt(state.cryptoKey, plaintext);
         const rh = await hashRoomId(state.roomId);
 
+        const select = document.getElementById('select-ttl');
+        const ttl = select ? parseInt(select.value, 10) : 3600;
+
         // Include lastSyncedTime to detect conflict on server
         const payload = {
             room_hash: rh,
             encrypted_data: data,
             iv: iv,
-            last_updated: state.lastSyncedTime || 0
+            last_updated: state.lastSyncedTime || 0,
+            ttl: ttl
         };
 
         const res = await fetch('?action=save_text', {
@@ -239,17 +250,38 @@ export async function saveText(isRetry = false) {
 export function startTextExpiry(seconds) {
     clearTextExpiry();
     const el = document.getElementById('text-expires');
+    const validUntilEl = document.getElementById('session-valid-until');
+    
+    let expiryDate = seconds > 0 ? new Date(Date.now() + seconds * 1000) : null;
+    
     if (!el) return;
     function tick() {
         if (seconds <= 0) {
             el.textContent = 'EXPIRED';
             el.style.color = 'var(--red)';
+            if (validUntilEl) {
+                validUntilEl.innerHTML = '<span style="color:var(--red)">EXPIRED</span>';
+            }
             return;
         }
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
         el.textContent = `TTL ${m}:${s}`;
         el.style.color = seconds < 120 ? 'var(--amber)' : 'var(--text-muted)';
+        
+        if (validUntilEl && expiryDate) {
+            const hVal = Math.floor(seconds / 3600);
+            const mVal = Math.floor((seconds % 3600) / 60);
+            const sVal = seconds % 60;
+            
+            const hStr = hVal > 0 ? String(hVal).padStart(2, '0') + ':' : '';
+            const mStr = String(mVal).padStart(2, '0');
+            const sStr = String(sVal).padStart(2, '0');
+            const timerStr = `${hStr}${mStr}:${sStr}`;
+            
+            validUntilEl.innerHTML = `valid until: <span style="color:var(--text-main);">${formatDateTime(expiryDate)}</span> (<span style="color:var(--accent-primary); font-weight:bold;">${timerStr}</span>)`;
+        }
+        
         seconds--;
         state.textExpiresTimer = setTimeout(tick, 1000);
     }
@@ -260,6 +292,49 @@ export function clearTextExpiry() {
     if (state.textExpiresTimer) clearTimeout(state.textExpiresTimer);
     const el = document.getElementById('text-expires');
     if (el) el.textContent = '';
+    const validUntilEl = document.getElementById('session-valid-until');
+    if (validUntilEl) {
+        validUntilEl.textContent = 'valid until: —';
+        validUntilEl.style.color = 'var(--text-muted)';
+    }
+}
+
+function formatDateTime(date) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const ss = String(date.getSeconds()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+}
+
+export async function resetTTL() {
+    if (!state.cryptoKey) return;
+    const select = document.getElementById('select-ttl');
+    const ttl = select ? parseInt(select.value, 10) : 3600;
+    
+    try {
+        const rh = await hashRoomId(state.roomId);
+        const payload = {
+            room_hash: rh,
+            ttl: ttl
+        };
+        const res = await fetch('?action=reset_ttl', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error);
+        
+        log('SESSION TTL EXTENDED', 'ok');
+        if (json.expires_in !== undefined) startTextExpiry(json.expires_in);
+        await loadFiles();
+    } catch (e) {
+        log(`EXTEND TTL ERR: ${e.message}`, 'err');
+    }
 }
 
 // ── File Upload ──────────────────────────────────────────────

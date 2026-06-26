@@ -32,20 +32,38 @@ require_once __DIR__ . '/api.php';
 
     <!-- Liminal OS inspired HUD bar -->
     <header id="hud-bar">
-        <div class="hud-left">
+        <div class="hud-left flex flex-wrap items-center gap-2">
+            <span class="hud-logo font-mono text-sm font-bold tracking-wider mr-2">VOID://<span class="hud-logo-dim">CLIPBOARD</span></span>
+            
             <span class="hud-badge">
                 <span id="status-dot" class="pulse inline-block w-2.5 h-2.5 rounded-full"
                     style="background:var(--text-muted)"></span>
                 <span id="status-text" class="mono text-xs" style="color:var(--text-secondary)">OFFLINE</span>
             </span>
+            
             <span class="hud-badge hidden sm:inline-flex">
                 <span class="mono text-xs" style="color:var(--text-muted)">SESSION ID:</span>
                 <span id="room-display" class="mono text-xs ml-1" style="color:var(--accent-primary); font-weight:bold;">—</span>
             </span>
-        </div>
-        
-        <div class="hud-center">
-            <span class="hud-logo font-mono text-sm font-bold tracking-wider">VOID://<span class="hud-logo-dim">CLIPBOARD</span></span>
+
+            <span class="hidden md:inline-flex items-center gap-1.5 px-2" style="font-family:var(--font-mono);">
+                <span class="mono text-xs" style="color:var(--text-muted)">TTL:</span>
+                <select id="select-ttl" class="mono text-xs bg-transparent text-main border-none p-0 cursor-pointer outline-none font-bold" style="color:var(--accent-primary); width:auto;">
+                    <option value="900" style="background:#0a0a0a; color:#f0f0f0;">15m</option>
+                    <option value="1800" style="background:#0a0a0a; color:#f0f0f0;">30m</option>
+                    <option value="3600" selected style="background:#0a0a0a; color:#f0f0f0;">1h</option>
+                    <option value="14400" style="background:#0a0a0a; color:#f0f0f0;">4h</option>
+                    <option value="43200" style="background:#0a0a0a; color:#f0f0f0;">12h</option>
+                    <option value="86400" style="background:#0a0a0a; color:#f0f0f0;">24h</option>
+                    <option value="172800" style="background:#0a0a0a; color:#f0f0f0;">48h</option>
+                </select>
+            </span>
+
+            <span class="hidden lg:inline-flex items-center px-2" style="font-family:var(--font-mono);">
+                <span id="session-valid-until" class="mono text-xs" style="color:var(--text-secondary)">valid until: —</span>
+            </span>
+
+            <button id="btn-reset-ttl" class="hud-badge hud-badge-btn hidden md:inline-flex">EXTEND TTL</button>
         </div>
         
         <div class="hud-right">
@@ -76,7 +94,7 @@ require_once __DIR__ . '/api.php';
             <div id="tab-text" class="flex flex-col gap-4">
                 <div class="relative flex flex-col">
                     <textarea id="editor" rows="14"
-                        placeholder="Paste your text here to begin secure synchronization... // HOW IT WORKS:&#10;// 1. End-to-end encryption (AES-GCM) happens in the browser before sending data to the server.&#10;// 2. The decryption key remains in the URL (#hash) and is never transmitted to the server.&#10;// 3. Text data automatically expires 30 minutes after the last update.&#10;// 4. Uploaded files are securely encrypted, have a 30-minute TTL, can be downloaded multiple times, or manually deleted."
+                        placeholder="Paste your text here to begin secure synchronization... // HOW IT WORKS:&#10;// 1. End-to-end encryption (AES-GCM) happens in the browser before sending data to the server.&#10;// 2. The decryption key remains in the URL (#hash) and is never transmitted to the server.&#10;// 3. Text data automatically expires according to the set TTL (default 1 hour, up to 48 hours).&#10;// 4. Uploaded files are securely encrypted, follow the session TTL, can be downloaded multiple times, or manually deleted."
                         class="w-full p-4"></textarea>
                     <div class="absolute bottom-3 right-4 flex items-center gap-3 pointer-events-none">
                         <span id="text-expires" class="mono text-xs countdown" style="color:var(--text-muted)"></span>

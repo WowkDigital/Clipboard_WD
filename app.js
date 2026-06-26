@@ -9,7 +9,7 @@ import { state } from './js/state.js';
 import { log } from './js/logger.js';
 import { deriveKey } from './js/crypto.js';
 import { setStatus, updateCharCount, showConfirm, clearCountdowns } from './js/ui.js';
-import { saveText, pollText, loadFiles, startPolling, stopPolling, clearTextExpiry } from './js/api.js';
+import { saveText, pollText, loadFiles, startPolling, stopPolling, clearTextExpiry, resetTTL } from './js/api.js';
 
 // ── URL & Init ───────────────────────────────────────────────
 function genKey() {
@@ -69,6 +69,12 @@ window.addEventListener('beforeunload', stopPolling);
 // ── Initialize Event Handlers ────────────────────────────────
 const btnSave = document.getElementById('btn-save');
 if (btnSave) btnSave.addEventListener('click', saveText);
+
+const btnResetTTL = document.getElementById('btn-reset-ttl');
+if (btnResetTTL) btnResetTTL.addEventListener('click', resetTTL);
+
+const selectTTL = document.getElementById('select-ttl');
+if (selectTTL) selectTTL.addEventListener('change', resetTTL);
 
 const btnClear = document.getElementById('btn-clear');
 if (btnClear) {

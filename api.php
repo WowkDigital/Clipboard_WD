@@ -7,8 +7,8 @@
 
 define('DB_PATH',      __DIR__ . '/database.sqlite');
 define('UPLOAD_DIR',   __DIR__ . '/uploads/');
-define('TEXT_TTL',     30 * 60);   // 30 min
-define('FILE_TTL',     30 * 60);   // 30 min
+define('TEXT_TTL',     3600);      // default 1h
+define('FILE_TTL',     3600);      // default 1h
 define('MAX_FILE',     20 * 1024 * 1024); // 20 MB
 define('GC_PROBABILITY', 5);       // % chance of GC per request
 
@@ -41,6 +41,7 @@ function api_dispatch(string $action): void {
             'download_file' => action_download_file(),
             'list_files'    => action_list_files(),
             'delete_file'   => action_delete_file(),
+            'reset_ttl'     => action_reset_ttl(),
             default         => json_error(400, 'unknown_action'),
         };
     } catch (Throwable $e) {
@@ -69,7 +70,8 @@ function db_migrate(SQLite3 $db): void {
             room_hash       TEXT PRIMARY KEY,
             encrypted_data  TEXT NOT NULL,
             iv              TEXT NOT NULL,
-            updated_at      INTEGER NOT NULL
+            updated_at      INTEGER NOT NULL,
+            ttl             INTEGER DEFAULT 3600
         );
         CREATE TABLE IF NOT EXISTS files (
             file_id         TEXT PRIMARY KEY,
@@ -80,6 +82,19 @@ function db_migrate(SQLite3 $db): void {
             created_at      INTEGER NOT NULL
         );
     ');
+
+    // Add column if it doesn't exist for existing databases
+    $result = $db->query("PRAGMA table_info(rooms)");
+    $has_ttl = false;
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        if ($row['name'] === 'ttl') {
+            $has_ttl = true;
+            break;
+        }
+    }
+    if (!$has_ttl) {
+        $db->exec('ALTER TABLE rooms ADD COLUMN ttl INTEGER DEFAULT 3600');
+    }
 }
 
 // ── Actions ──────────────────────────────────────────────────
@@ -90,6 +105,7 @@ function action_save_text(): void {
     $encrypted_data = $body['encrypted_data'] ?? '';
     $iv             = $body['iv'] ?? '';
     $last_updated   = isset($body['last_updated']) ? (int)$body['last_updated'] : 0;
+    $ttl            = isset($body['ttl']) ? min(172800, max(60, (int)$body['ttl'])) : 3600;
 
     if (!$encrypted_data || !$iv) {
         json_error(400, 'missing_fields');
@@ -112,21 +128,23 @@ function action_save_text(): void {
     }
 
     $stmt = $db->prepare('
-        INSERT INTO rooms (room_hash, encrypted_data, iv, updated_at)
-        VALUES (:rh, :ed, :iv, :ua)
+        INSERT INTO rooms (room_hash, encrypted_data, iv, updated_at, ttl)
+        VALUES (:rh, :ed, :iv, :ua, :ttl)
         ON CONFLICT(room_hash) DO UPDATE SET
             encrypted_data = excluded.encrypted_data,
             iv             = excluded.iv,
-            updated_at     = excluded.updated_at
+            updated_at     = excluded.updated_at,
+            ttl            = excluded.ttl
     ');
     $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
     $stmt->bindValue(':ed', $encrypted_data, SQLITE3_TEXT);
     $stmt->bindValue(':iv', $iv, SQLITE3_TEXT);
     $stmt->bindValue(':ua', $now, SQLITE3_INTEGER);
+    $stmt->bindValue(':ttl', $ttl, SQLITE3_INTEGER);
     $stmt->execute();
     $db->exec('COMMIT');
 
-    json_ok(['saved' => true, 'updated_at' => $now]);
+    json_ok(['saved' => true, 'updated_at' => $now, 'expires_in' => $ttl]);
 }
 
 function action_get_text(): void {
@@ -134,7 +152,7 @@ function action_get_text(): void {
     $db = db();
     $now = time();
 
-    $stmt = $db->prepare('SELECT encrypted_data, iv, updated_at FROM rooms WHERE room_hash = :rh');
+    $stmt = $db->prepare('SELECT encrypted_data, iv, updated_at, ttl FROM rooms WHERE room_hash = :rh');
     $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
     $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
 
@@ -143,8 +161,10 @@ function action_get_text(): void {
         return;
     }
 
+    $ttl = isset($row['ttl']) ? (int)$row['ttl'] : 3600;
+
     // Lazy deletion — expired room
-    if ($now - $row['updated_at'] > TEXT_TTL) {
+    if ($now - $row['updated_at'] > $ttl) {
         $db->exec('BEGIN IMMEDIATE');
         $del = $db->prepare('DELETE FROM rooms WHERE room_hash = :rh');
         $del->bindValue(':rh', $room_hash, SQLITE3_TEXT);
@@ -167,7 +187,8 @@ function action_get_text(): void {
         'encrypted_data' => $row['encrypted_data'],
         'iv'             => $row['iv'],
         'updated_at'     => $row['updated_at'],
-        'expires_in'     => TEXT_TTL - ($now - $row['updated_at']),
+        'expires_in'     => $ttl - ($now - $row['updated_at']),
+        'ttl'            => $ttl,
     ]);
 }
 
@@ -205,8 +226,14 @@ function action_upload_file(): void {
         json_error(500, 'storage_error');
     }
 
-    $db  = db();
-    $now = time();
+    // Get room TTL
+    $room_ttl = 3600;
+    $stmt_room = $db->prepare('SELECT ttl FROM rooms WHERE room_hash = :rh');
+    $stmt_room->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+    $room_row = $stmt_room->execute()->fetchArray(SQLITE3_ASSOC);
+    if ($room_row) {
+        $room_ttl = (int)$room_row['ttl'];
+    }
 
     $db->exec('BEGIN IMMEDIATE');
     $stmt = $db->prepare('
@@ -224,7 +251,7 @@ function action_upload_file(): void {
     json_ok([
         'file_id'   => $file_id,
         'created_at'=> $now,
-        'expires_in'=> FILE_TTL,
+        'expires_in'=> $room_ttl,
     ]);
 }
 
@@ -247,8 +274,17 @@ function action_download_file(): void {
 
     if (!$row) json_error(404, 'not_found');
 
+    // Get room TTL
+    $room_ttl = 3600;
+    $stmt_room = $db->prepare('SELECT ttl FROM rooms WHERE room_hash = :rh');
+    $stmt_room->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+    $room_row = $stmt_room->execute()->fetchArray(SQLITE3_ASSOC);
+    if ($room_row) {
+        $room_ttl = (int)$room_row['ttl'];
+    }
+
     // Expired
-    if (($now - $row['created_at']) > FILE_TTL) {
+    if (($now - $row['created_at']) > $room_ttl) {
         purge_file($db, $file_id);
         json_error(410, 'expired');
     }
@@ -287,6 +323,15 @@ function action_list_files(): void {
     $db  = db();
     $now = time();
 
+    // Get room TTL
+    $room_ttl = 3600;
+    $stmt_room = $db->prepare('SELECT ttl FROM rooms WHERE room_hash = :rh');
+    $stmt_room->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+    $room_row = $stmt_room->execute()->fetchArray(SQLITE3_ASSOC);
+    if ($room_row) {
+        $room_ttl = (int)$room_row['ttl'];
+    }
+
     $stmt = $db->prepare('
         SELECT file_id, encrypted_meta, iv_meta, created_at, download_count
         FROM files WHERE room_hash = :rh
@@ -298,7 +343,7 @@ function action_list_files(): void {
     $files = [];
     while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
         $age = $now - $row['created_at'];
-        if ($age > FILE_TTL) {
+        if ($age > $room_ttl) {
             purge_file($db, $row['file_id']);
             continue;
         }
@@ -307,7 +352,7 @@ function action_list_files(): void {
             'encrypted_meta' => $row['encrypted_meta'],
             'iv_meta'        => $row['iv_meta'],
             'created_at'     => $row['created_at'],
-            'expires_in'     => FILE_TTL - $age,
+            'expires_in'     => $room_ttl - $age,
         ];
     }
 
@@ -370,25 +415,68 @@ function purge_file(SQLite3 $db, string $file_id): void {
     $db->exec('COMMIT');
 }
 
+function action_reset_ttl(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error(405, 'method_not_allowed');
+    $body = json_input();
+    $room_hash = validate_hash($body['room_hash'] ?? '');
+    $ttl       = isset($body['ttl']) ? min(172800, max(60, (int)$body['ttl'])) : 3600;
+
+    $db = db();
+    $now = time();
+
+    $db->exec('BEGIN IMMEDIATE');
+    // Check if room exists
+    $stmt = $db->prepare('SELECT updated_at FROM rooms WHERE room_hash = :rh');
+    $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+    $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+    if (!$row) {
+        $db->exec('ROLLBACK');
+        json_error(404, 'not_found');
+    }
+
+    // Reset updated_at to now, and update ttl if provided
+    $stmt = $db->prepare('UPDATE rooms SET updated_at = :ua, ttl = :ttl WHERE room_hash = :rh');
+    $stmt->bindValue(':ua', $now, SQLITE3_INTEGER);
+    $stmt->bindValue(':ttl', $ttl, SQLITE3_INTEGER);
+    $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+    $stmt->execute();
+
+    // Also reset file created_at to now
+    $stmt = $db->prepare('UPDATE files SET created_at = :ua WHERE room_hash = :rh');
+    $stmt->bindValue(':ua', $now, SQLITE3_INTEGER);
+    $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
+    $stmt->execute();
+
+    $db->exec('COMMIT');
+
+    json_ok(['updated_at' => $now, 'expires_in' => $ttl, 'ttl' => $ttl]);
+}
+
 function gc_run(SQLite3 $db): void {
     $now = time();
-    $text_cutoff = $now - TEXT_TTL;
-    $file_cutoff = $now - FILE_TTL;
 
     $db->exec('BEGIN IMMEDIATE');
 
     // Purge expired text rooms
-    $db->exec("DELETE FROM rooms WHERE updated_at < $text_cutoff");
+    $db->exec("DELETE FROM rooms WHERE (updated_at + COALESCE(ttl, 3600)) < $now");
 
-    // Find expired files
+    // Find expired files (where file created_at + room ttl < now, or room doesn't exist anymore)
     $res = $db->query("
-        SELECT file_id FROM files
-        WHERE created_at < $file_cutoff
+        SELECT f.file_id FROM files f
+        LEFT JOIN rooms r ON f.room_hash = r.room_hash
+        WHERE (f.created_at + COALESCE(r.ttl, 3600)) < $now OR r.room_hash IS NULL
     ");
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         @unlink(UPLOAD_DIR . $row['file_id']);
     }
-    $db->exec("DELETE FROM files WHERE created_at < $file_cutoff");
+    
+    $db->exec("
+        DELETE FROM files WHERE file_id IN (
+            SELECT f.file_id FROM files f
+            LEFT JOIN rooms r ON f.room_hash = r.room_hash
+            WHERE (f.created_at + COALESCE(r.ttl, 3600)) < $now OR r.room_hash IS NULL
+        )
+    ");
 
     $db->exec('COMMIT');
 
