@@ -189,6 +189,19 @@ window.addEventListener('online', async () => {
     await loadFiles();
 });
 
+// Toggle System Log visibility
+const logHeader = document.getElementById('log-header');
+const logContainer = document.getElementById('log');
+const logToggleIndicator = document.getElementById('log-toggle-indicator');
+
+if (logHeader && logContainer && logToggleIndicator) {
+    logHeader.addEventListener('click', (e) => {
+        if (e.target.id === 'btn-clear-log') return;
+        const isHidden = logContainer.classList.toggle('hidden');
+        logToggleIndicator.textContent = isHidden ? '[+]' : '[-]';
+    });
+}
+
 // ── Boot ─────────────────────────────────────────────────────
 (async () => {
     log('VOID://CLIPBOARD INITIALIZED', 'ok');
