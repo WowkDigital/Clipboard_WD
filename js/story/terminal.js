@@ -3,6 +3,7 @@
 // ── Typewriter Queue & Scheduler State ───────────────────────
 let printQueue = [];
 let isPrinting = false;
+let isProcessingScheduled = false;
 let timerId = null;
 let currentLineElement = null;
 let currentLineText = "";
@@ -13,12 +14,19 @@ let charsPerTick = 1;
 // ── Terminal Printing Helper ─────────────────────────────────
 export function printLine(text, type = '', delay = -1) {
     printQueue.push({ text, type, delay });
-    processQueue();
+    if (!isPrinting && !isProcessingScheduled) {
+        isProcessingScheduled = true;
+        queueMicrotask(() => {
+            isProcessingScheduled = false;
+            processQueue();
+        });
+    }
 }
 
 export function clearTerminal() {
     printQueue = [];
     isPrinting = false;
+    isProcessingScheduled = false;
     if (timerId) {
         clearInterval(timerId);
         timerId = null;
