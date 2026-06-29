@@ -47,12 +47,11 @@ export function updateStoryUI() {
         galleryNew.classList.toggle('hidden', !hasNewAnomalies);
     }
 
-    // Toggle MINE button visibility based on whether SIDE-5 is active
+    // Toggle MINE button visibility based on whether SIDE-5 is unlocked
     const isSide5Unlocked = gameState.completedSideMissions.includes('SIDE-4');
-    const isSide5Completed = gameState.completedSideMissions.includes('SIDE-5');
     const mineBtn = document.getElementById('btn-cmd-mine');
     if (mineBtn) {
-        mineBtn.classList.toggle('hidden', !(isSide5Unlocked && !isSide5Completed));
+        mineBtn.classList.toggle('hidden', !isSide5Unlocked);
     }
 }
 

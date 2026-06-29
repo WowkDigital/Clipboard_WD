@@ -421,8 +421,7 @@ export async function handleCommand(cmdLine) {
                 break;
             }
             if (isSide5Completed) {
-                printLine('[+] HASH_COLLISION.bin is already completed.', 'ok');
-                break;
+                printLine('[!] HASH_COLLISION.bin is already completed. Restarting miner for verification...', 'warn');
             }
             
             startBypassMiner();
