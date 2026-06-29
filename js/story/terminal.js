@@ -1,15 +1,11 @@
 'use strict';
 
-// ── Typewriter Queue & Scheduler State ───────────────────────
+// ── Line-by-Line Queue State ─────────────────────────────────
 let printQueue = [];
 let isPrinting = false;
 let isProcessingScheduled = false;
 let timerId = null;
-let currentLineElement = null;
-let currentLineText = "";
-let currentLineType = "";
-let currentLinePos = 0;
-let charsPerTick = 1;
+let lineDelay = 50;
 
 // ── Terminal Printing Helper ─────────────────────────────────
 export function printLine(text, type = '', delay = -1) {
@@ -28,12 +24,9 @@ export function clearTerminal() {
     isPrinting = false;
     isProcessingScheduled = false;
     if (timerId) {
-        clearInterval(timerId);
+        clearTimeout(timerId);
         timerId = null;
     }
-    currentLineElement = null;
-    currentLineText = "";
-    currentLinePos = 0;
     const output = document.getElementById('story-terminal-output');
     if (output) output.innerHTML = '';
 }
@@ -44,93 +37,55 @@ function processQueue() {
 
     isPrinting = true;
 
-    // Calculate total character length in the queue
-    const totalLength = printQueue.reduce((sum, item) => sum + (item.text ? item.text.length : 0), 0);
-    
-    // Target completion in ~1.2 to 1.5 seconds.
-    // Running at ~60fps (16ms ticks), 1.3 seconds is about 80 ticks.
-    const targetTicks = 80;
-    charsPerTick = Math.ceil(totalLength / targetTicks);
-    if (charsPerTick < 1) charsPerTick = 1;
+    // Calculate line delay dynamically to finish the entire batch in ~1.0 second.
+    // Capped at max 80ms for optimal readability.
+    const totalLines = printQueue.length;
+    lineDelay = totalLines > 0 ? Math.min(80, 1000 / totalLines) : 50;
+    if (lineDelay < 10) lineDelay = 10; // Minimum 10ms
 
-    // Start scheduler
-    timerId = setInterval(tick, 16);
+    printNextLine();
 }
 
-function tick() {
-    const output = document.getElementById('story-terminal-output');
-    if (!output) {
-        stopPrinting();
+function printNextLine() {
+    if (printQueue.length === 0) {
+        isPrinting = false;
         return;
     }
 
-    let budget = charsPerTick;
+    const { text, type, delay } = printQueue.shift();
+    const output = document.getElementById('story-terminal-output');
+    if (!output) {
+        isPrinting = false;
+        return;
+    }
 
-    while (budget > 0) {
-        // Fetch next line from queue if none active
-        if (currentLineElement === null) {
-            if (printQueue.length === 0) {
-                stopPrinting();
-                return;
-            }
+    const line = document.createElement('div');
+    line.className = 'mono text-xs leading-relaxed py-0.5';
 
-            const next = printQueue.shift();
-            currentLineText = next.text || "";
-            currentLineType = next.type;
-            currentLinePos = 0;
+    if (type === 'ok') {
+        line.style.color = '#10b981';
+    } else if (type === 'err') {
+        line.style.color = '#ef4444';
+    } else if (type === 'warn') {
+        line.style.color = '#eab308';
+    } else if (type === 'sys') {
+        line.style.color = '#a855f7';
+    } else {
+        line.style.color = '#38bdf8';
+    }
 
-            // Create line container
-            currentLineElement = document.createElement('div');
-            currentLineElement.className = 'mono text-xs leading-relaxed py-0.5';
-            
-            if (currentLineType === 'ok') {
-                currentLineElement.style.color = '#10b981';
-            } else if (currentLineType === 'err') {
-                currentLineElement.style.color = '#ef4444';
-            } else if (currentLineType === 'warn') {
-                currentLineElement.style.color = '#eab308';
-            } else if (currentLineType === 'sys') {
-                currentLineElement.style.color = '#a855f7';
-            } else {
-                currentLineElement.style.color = '#38bdf8';
-            }
+    line.textContent = text || '';
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
 
-            output.appendChild(currentLineElement);
-            output.scrollTop = output.scrollHeight;
+    const actualDelay = delay >= 0 ? delay : lineDelay;
 
-            // Immediate printing if delay is explicitly 0
-            if (next.delay === 0) {
-                currentLineElement.textContent = currentLineText;
-                currentLineElement = null;
-                output.scrollTop = output.scrollHeight;
-                continue;
-            }
-        }
-
-        // Stream chars up to the tick budget
-        const remainingChars = currentLineText.length - currentLinePos;
-        const toPrint = Math.min(budget, remainingChars);
-
-        if (toPrint > 0) {
-            currentLineElement.textContent += currentLineText.substring(currentLinePos, currentLinePos + toPrint);
-            currentLinePos += toPrint;
-            budget -= toPrint;
-            output.scrollTop = output.scrollHeight;
-        }
-
-        if (currentLinePos >= currentLineText.length) {
-            currentLineElement = null;
-        }
+    if (actualDelay === 0) {
+        printNextLine();
+    } else {
+        timerId = setTimeout(printNextLine, actualDelay);
     }
 }
 
-function stopPrinting() {
-    isPrinting = false;
-    if (timerId) {
-        clearInterval(timerId);
-        timerId = null;
-    }
-    currentLineElement = null;
-}
 
 
