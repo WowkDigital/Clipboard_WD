@@ -732,4 +732,38 @@ textarea::placeholder {
     background: rgba(10, 10, 10, 0.95) !important;
 }
 
+/* Command Shortcut buttons */
+.btn-cmd-shortcut {
+    background: rgba(56, 189, 248, 0.03) !important;
+    border-color: var(--glass-border) !important;
+    color: #38bdf8 !important;
+    cursor: pointer;
+    transition: all var(--transition-fast) !important;
+    font-family: var(--font-mono) !important;
+}
+
+.btn-cmd-shortcut:hover {
+    border-color: #38bdf8 !important;
+    background: rgba(56, 189, 248, 0.08) !important;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.12) !important;
+    color: var(--text-main) !important;
+}
+
+.btn-cmd-shortcut:active {
+    transform: scale(0.96);
+}
+
+.btn-cmd-shortcut.btn-red {
+    background: rgba(239, 68, 68, 0.03) !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
+    color: var(--error) !important;
+}
+
+.btn-cmd-shortcut.btn-red:hover {
+    border-color: var(--error) !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.12) !important;
+    color: var(--text-main) !important;
+}
+
 

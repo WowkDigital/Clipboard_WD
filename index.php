@@ -149,6 +149,16 @@ require_once __DIR__ . '/api.php';
                         <span class="mono text-xs font-bold text-sky-400 shrink-0 select-none">USR://&gt;</span>
                         <input type="text" id="story-terminal-input" class="bg-transparent border-none outline-none mono text-xs text-sky-300 w-full focus:ring-0 p-0" style="caret-color: #38bdf8;" placeholder="Type 'help' for instructions..." autofocus autocomplete="off">
                     </div>
+                    <!-- Command Shortcuts -->
+                    <div class="flex flex-wrap gap-1.5 mt-1 select-none">
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="help">HELP</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="status">STATUS</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="scan">SCAN</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="docs">DOCS</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="gallery">GALLERY</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="hint">HINT</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded btn-red" data-cmd="clear">CLEAR</button>
+                    </div>
                 </div>
 
                 <!-- Decrypted Documents list -->

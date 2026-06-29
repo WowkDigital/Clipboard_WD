@@ -600,6 +600,17 @@ export function initStory() {
         });
     }
 
+    // Hook up shortcut buttons click listener
+    document.querySelectorAll('.btn-cmd-shortcut').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const cmd = btn.dataset.cmd;
+            if (cmd) {
+                handleCommand(cmd);
+                if (input) input.focus();
+            }
+        });
+    });
+
     // Print welcome text on load
     clearTerminal();
     printLine('[+] ESTABLISHING SECURE PROTOCOL WITH LIMIT GATEWAY...', 'warn');
