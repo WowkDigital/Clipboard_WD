@@ -100,6 +100,11 @@ export const SIDE_MISSIONS = {
         id: 'SIDE-3',
         title: 'GATEWAY_UPLINK.net',
         desc: 'Establish a connection from a separate IP address (different network node). Confirm the link by scanning/checking the gateway.'
+    },
+    'SIDE-4': {
+        id: 'SIDE-4',
+        title: 'NULL_VOID_SECTOR.bin',
+        desc: 'Re-initialize the gateway URL hash such that the Room ID (first 8 characters of the URL hash) starts with exactly "000". Run a check to extract the Null Void archive.'
     }
 };
 

@@ -42,6 +42,17 @@ export function checkSideMissions() {
         }
     }
 
+    // SIDE-4: Null Void Sector
+    if (!gameState.completedSideMissions.includes('SIDE-4')) {
+        if (state.roomId && state.roomId.startsWith('000')) {
+            gameState.completedSideMissions.push('SIDE-4');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: NULL_VOID_SECTOR.bin', 'ok');
+            printLine('Cryptographic Null Void coordinate detected in URL hash.', 'ok');
+            printLine('Decrypted secret logs for Level 37 poolroom structures.', 'ok');
+            completedAny = true;
+        }
+    }
+
     if (completedAny) {
         saveProgress();
         updateStoryUI();
