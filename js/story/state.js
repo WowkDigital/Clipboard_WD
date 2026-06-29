@@ -4,7 +4,15 @@ export const gameState = {
     stage: 0, // 0: Start, 1: Unlocked DOC-2, 2: Scanned 432Hz -> DOC-3/IMG-2, 3: Coordinates Unlocked -> DOC-4/IMG-3, 4: NOCLIP Synced -> DOC-5/IMG-4
     unlockedDocs: ['DOC-1'],
     unlockedAnomalies: [],
-    completedSideMissions: []
+    completedSideMissions: [],
+    seenDocs: ['DOC-1'],
+    seenAnomalies: [],
+    seenMissions: [],
+    collapsedSections: {
+        docs: false,
+        missions: false,
+        gallery: false
+    }
 };
 
 // Load progress from localStorage
@@ -17,6 +25,14 @@ export function loadProgress() {
             gameState.unlockedDocs = data.unlockedDocs ?? ['DOC-1'];
             gameState.unlockedAnomalies = data.unlockedAnomalies ?? [];
             gameState.completedSideMissions = data.completedSideMissions ?? [];
+            gameState.seenDocs = data.seenDocs ?? ['DOC-1'];
+            gameState.seenAnomalies = data.seenAnomalies ?? [];
+            gameState.seenMissions = data.seenMissions ?? [];
+            gameState.collapsedSections = data.collapsedSections ?? {
+                docs: false,
+                missions: false,
+                gallery: false
+            };
         } catch (e) {
             console.error('Failed to parse story progress:', e);
         }
@@ -34,6 +50,14 @@ export function resetProgress() {
     gameState.unlockedDocs = ['DOC-1'];
     gameState.unlockedAnomalies = [];
     gameState.completedSideMissions = [];
+    gameState.seenDocs = ['DOC-1'];
+    gameState.seenAnomalies = [];
+    gameState.seenMissions = [];
+    gameState.collapsedSections = {
+        docs: false,
+        missions: false,
+        gallery: false
+    };
     saveProgress();
 }
 

@@ -1,13 +1,14 @@
 'use strict';
 
 import { loadProgress } from './story/state.js';
-import { updateStoryUI } from './story/ui.js';
+import { updateStoryUI, initCollapsible } from './story/ui.js';
 import { handleCommand } from './story/events.js';
 import { printLine, clearTerminal } from './story/terminal.js';
 
 // ── Initialization ───────────────────────────────────────────
 export function initStory() {
     loadProgress();
+    initCollapsible();
     updateStoryUI();
 
     // Hook up terminal input listener

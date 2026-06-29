@@ -222,8 +222,13 @@ export function handleCommand(cmdLine) {
             checkSideMissions();
             Object.keys(SIDE_MISSIONS).forEach(id => {
                 const isDone = gameState.completedSideMissions.includes(id);
+                if (isDone && !gameState.seenMissions.includes(id)) {
+                    gameState.seenMissions.push(id);
+                }
                 printLine(`  [${id}] ${SIDE_MISSIONS[id].title}: ${isDone ? 'COMPLETED' : 'ACTIVE'}`, isDone ? 'ok' : 'warn');
             });
+            saveProgress();
+            updateStoryUI();
             break;
 
         case 'hint':

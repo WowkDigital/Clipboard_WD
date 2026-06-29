@@ -1,11 +1,13 @@
 'use strict';
 
 import { DOCUMENTS, ANOMALIES, SIDE_MISSIONS } from './db.js';
-import { gameState } from './state.js';
+import { gameState, saveProgress } from './state.js';
 import { printLine } from './terminal.js';
 
 // ── UI Rendering ─────────────────────────────────────────────
 export function updateStoryUI() {
+    updateCollapsibleStates();
+
     renderDocuments();
     renderGallery();
     renderSideMissions();
@@ -24,6 +26,80 @@ export function updateStoryUI() {
     const sideCount = document.getElementById('side-missions-count');
     if (sideCount) {
         sideCount.textContent = `${gameState.completedSideMissions.length}/${Object.keys(SIDE_MISSIONS).length}`;
+    }
+
+    // Update new content badges
+    const docsNew = document.getElementById('story-docs-new');
+    if (docsNew) {
+        const hasNewDocs = gameState.unlockedDocs.some(id => !gameState.seenDocs.includes(id));
+        docsNew.classList.toggle('hidden', !hasNewDocs);
+    }
+
+    const missionsNew = document.getElementById('story-missions-new');
+    if (missionsNew) {
+        const hasNewMissions = gameState.completedSideMissions.some(id => !gameState.seenMissions.includes(id));
+        missionsNew.classList.toggle('hidden', !hasNewMissions);
+    }
+
+    const galleryNew = document.getElementById('story-gallery-new');
+    if (galleryNew) {
+        const hasNewAnomalies = gameState.unlockedAnomalies.some(id => !gameState.seenAnomalies.includes(id));
+        galleryNew.classList.toggle('hidden', !hasNewAnomalies);
+    }
+}
+
+export function updateCollapsibleStates() {
+    const docsList = document.getElementById('story-docs-list');
+    const docsToggle = document.getElementById('story-docs-toggle');
+    if (docsList && docsToggle) {
+        const isCollapsed = gameState.collapsedSections.docs;
+        docsList.classList.toggle('hidden', isCollapsed);
+        docsToggle.textContent = isCollapsed ? '[+]' : '[-]';
+    }
+
+    const missionsList = document.getElementById('story-side-missions-list');
+    const missionsToggle = document.getElementById('story-missions-toggle');
+    if (missionsList && missionsToggle) {
+        const isCollapsed = gameState.collapsedSections.missions;
+        missionsList.classList.toggle('hidden', isCollapsed);
+        missionsToggle.textContent = isCollapsed ? '[+]' : '[-]';
+    }
+
+    const galleryGrid = document.getElementById('story-gallery-grid');
+    const galleryToggle = document.getElementById('story-gallery-toggle');
+    if (galleryGrid && galleryToggle) {
+        const isCollapsed = gameState.collapsedSections.gallery;
+        galleryGrid.classList.toggle('hidden', isCollapsed);
+        galleryToggle.textContent = isCollapsed ? '[+]' : '[-]';
+    }
+}
+
+export function initCollapsible() {
+    const docsHeader = document.getElementById('story-docs-header');
+    if (docsHeader) {
+        docsHeader.addEventListener('click', () => {
+            gameState.collapsedSections.docs = !gameState.collapsedSections.docs;
+            saveProgress();
+            updateStoryUI();
+        });
+    }
+
+    const missionsHeader = document.getElementById('story-missions-header');
+    if (missionsHeader) {
+        missionsHeader.addEventListener('click', () => {
+            gameState.collapsedSections.missions = !gameState.collapsedSections.missions;
+            saveProgress();
+            updateStoryUI();
+        });
+    }
+
+    const galleryHeader = document.getElementById('story-gallery-header');
+    if (galleryHeader) {
+        galleryHeader.addEventListener('click', () => {
+            gameState.collapsedSections.gallery = !gameState.collapsedSections.gallery;
+            saveProgress();
+            updateStoryUI();
+        });
     }
 }
 
@@ -58,6 +134,11 @@ export function renderSideMissions() {
         el.appendChild(statusSpan);
 
         el.onclick = () => {
+            if (isCompleted && !gameState.seenMissions.includes(id)) {
+                gameState.seenMissions.push(id);
+                saveProgress();
+                updateStoryUI();
+            }
             printLine(`\n--- MISSION DETAILS: ${mission.title} ---`, 'sys');
             printLine(mission.desc, '');
             printLine(`Status: ${isCompleted ? 'COMPLETED' : 'ACTIVE'}`, isCompleted ? 'ok' : 'warn');
@@ -132,6 +213,13 @@ export function readDocumentInTerminal(id) {
     const doc = DOCUMENTS[id];
     if (!doc) return;
     
+    // Mark as seen
+    if (!gameState.seenDocs.includes(id)) {
+        gameState.seenDocs.push(id);
+        saveProgress();
+        updateStoryUI();
+    }
+    
     printLine(`\n--- READING FILE: ${doc.title} ---`, 'sys');
     doc.content.forEach(line => {
         printLine(line, '');
@@ -143,6 +231,13 @@ export function readDocumentInTerminal(id) {
 export function openImageModal(id) {
     const item = ANOMALIES[id];
     if (!item) return;
+
+    // Mark as seen
+    if (!gameState.seenAnomalies.includes(id)) {
+        gameState.seenAnomalies.push(id);
+        saveProgress();
+        updateStoryUI();
+    }
 
     const modal = document.getElementById('story-image-modal');
     const modalImg = document.getElementById('story-modal-img');

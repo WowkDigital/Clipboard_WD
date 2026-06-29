@@ -164,8 +164,12 @@ require_once __DIR__ . '/api.php';
 
                 <!-- Decrypted Documents list -->
                 <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
-                    <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
-                        <span>[DECRYPTED_LOGS]</span>
+                    <div id="story-docs-header" class="mono text-xs font-bold border-b pb-1 flex justify-between items-center cursor-pointer select-none" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <div class="flex items-center gap-2">
+                            <span>[DECRYPTED_LOGS]</span>
+                            <span id="story-docs-toggle" style="color:var(--text-muted)">[-]</span>
+                            <span id="story-docs-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
+                        </div>
                         <span id="docs-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/5</span>
                     </div>
                     <div id="story-docs-list" class="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto">
@@ -175,8 +179,12 @@ require_once __DIR__ . '/api.php';
 
                 <!-- Side Missions list -->
                 <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
-                    <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
-                        <span>[INDEPENDENT_MISSIONS]</span>
+                    <div id="story-missions-header" class="mono text-xs font-bold border-b pb-1 flex justify-between items-center cursor-pointer select-none" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <div class="flex items-center gap-2">
+                            <span>[INDEPENDENT_MISSIONS]</span>
+                            <span id="story-missions-toggle" style="color:var(--text-muted)">[-]</span>
+                            <span id="story-missions-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
+                        </div>
                         <span id="side-missions-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
                     </div>
                     <div id="story-side-missions-list" class="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto">
@@ -187,8 +195,12 @@ require_once __DIR__ . '/api.php';
 
                 <!-- Gallery list -->
                 <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
-                    <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
-                        <span>[CAPTURED_ANOMALIES]</span>
+                    <div id="story-gallery-header" class="mono text-xs font-bold border-b pb-1 flex justify-between items-center cursor-pointer select-none" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <div class="flex items-center gap-2">
+                            <span>[CAPTURED_ANOMALIES]</span>
+                            <span id="story-gallery-toggle" style="color:var(--text-muted)">[-]</span>
+                            <span id="story-gallery-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
+                        </div>
                         <span id="gallery-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
                     </div>
                     <div id="story-gallery-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-[260px] overflow-y-auto">
