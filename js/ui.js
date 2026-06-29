@@ -114,41 +114,55 @@ export function renderFiles(files) {
 
     files.forEach(f => {
         const item = document.createElement('div');
-        item.className = 'file-item p-3 flex items-center gap-3 flex-wrap';
+        item.className = 'file-item p-3 flex justify-between items-center gap-4';
         item.dataset.fileId = f.file_id;
 
-        const cdEl = document.createElement('span');
-        cdEl.className = 'mono text-xs countdown ml-auto';
-        cdEl.style.color = 'var(--text-muted)';
-        startFileCountdown(cdEl, f.expires_in);
+        const infoCol = document.createElement('div');
+        infoCol.className = 'flex flex-col gap-1 min-w-0 flex-1';
 
         const nameEl = document.createElement('span');
-        nameEl.className = 'mono text-xs flex-1 truncate';
-        nameEl.style.color = 'var(--text-dim)';
+        nameEl.className = 'mono text-sm truncate font-medium';
+        nameEl.style.color = 'var(--text-main)';
         nameEl.textContent = '…';
 
+        const metaRow = document.createElement('div');
+        metaRow.className = 'flex items-center gap-3 text-xs';
+        metaRow.style.color = 'var(--text-secondary)';
+
         const sizeEl = document.createElement('span');
-        sizeEl.className = 'mono text-xs';
-        sizeEl.style.color = 'var(--text-muted)';
+        sizeEl.className = 'mono';
+
+        const cdEl = document.createElement('span');
+        cdEl.className = 'mono countdown';
+        startFileCountdown(cdEl, f.expires_in);
+
+        metaRow.appendChild(sizeEl);
+        metaRow.appendChild(cdEl);
+        infoCol.appendChild(nameEl);
+        infoCol.appendChild(metaRow);
+
+        const actionsCol = document.createElement('div');
+        actionsCol.className = 'flex items-center gap-2 shrink-0';
 
         const dlBtn = document.createElement('button');
         dlBtn.className = 'btn';
         dlBtn.textContent = 'DOWNLOAD';
         dlBtn.style.padding = '3px 10px';
         dlBtn.style.fontSize = '10px';
+        dlBtn.style.minHeight = '1.8rem';
 
         const delBtn = document.createElement('button');
         delBtn.className = 'btn btn-red';
         delBtn.textContent = 'DELETE';
         delBtn.style.padding = '3px 10px';
         delBtn.style.fontSize = '10px';
-        delBtn.style.marginLeft = '5px';
+        delBtn.style.minHeight = '1.8rem';
 
-        item.appendChild(nameEl);
-        item.appendChild(sizeEl);
-        item.appendChild(cdEl);
-        item.appendChild(dlBtn);
-        item.appendChild(delBtn);
+        actionsCol.appendChild(dlBtn);
+        actionsCol.appendChild(delBtn);
+
+        item.appendChild(infoCol);
+        item.appendChild(actionsCol);
         list.appendChild(item);
 
         let deleteClickedOnce = false;
