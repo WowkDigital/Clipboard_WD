@@ -1,0 +1,91 @@
+# Creative Mission Ideas: Liminal Space & App Mechanics
+
+This document outlines interactive, puzzle-oriented tasks ("Bypasses") for VOID://CLIPBOARD. Each task leverages the application's unique technical mechanics (E2EE, Diff-Match-Patch merging, TTL timers, network connectivity, and browser storage) themed around the eerie, atmospheric aesthetics of "liminal spaces" (inspired by Backrooms, Poolrooms, and CRT terminals).
+
+---
+
+## 1. Merging Parallel Realities (Merge Conflict Mechanic)
+* **Theme**: The yellow corridors of Level 0 are splitting into two overlapping dimensions. To open the gateway, you must merge the data registries of both timelines.
+* **App Mechanic**: Leverages the client-side `diff-match-patch` merge conflict resolution.
+* **Task Description**:
+  1. Open the same Clipboard Room in two separate browser windows (Timeline A and Timeline B) and wait for them to initialize.
+  2. In Timeline A, edit the text area to contain: `registry_key: [LEFT_VECTOR]`. Do **not** sync yet.
+  3. In Timeline B, edit the text area to contain: `[RIGHT_VECTOR] :registry_key`. Do **not** sync yet.
+  4. Click "ENCRYPT & SYNC" in Timeline A, then immediately click "ENCRYPT & SYNC" in Timeline B.
+  5. The server will detect a concurrency conflict and trigger the client-side auto-merge. The merged text will result in: `[RIGHT_VECTOR] :registry_key: [LEFT_VECTOR]`.
+  6. Typing `check` in the terminal detects the successfully combined key and stabilizes the rift.
+
+---
+
+## 2. Temporal Rift Capture (TTL / File Expiry Mechanic)
+* **Theme**: A classified database archive is leaking through a highly unstable temporal rift in the Poolrooms. The rift closes rapidly, requiring extreme precision to capture the data.
+* **App Mechanic**: Relies on the file TTL (Time-To-Live) countdown loop.
+* **Task Description**:
+  1. Upload a file named `rift_signature.dat` to the files tab. 
+  2. The terminal will trace the file's TTL expiry. You must click the **DOWNLOAD** button *exactly* when the file has less than 10 seconds remaining before deletion (e.g., when the TTL text turns red).
+  3. Clicking download at the critical window triggers a client decrypt success which is checked by the terminal script, recovering the document.
+
+---
+
+## 3. Radio Silence Protocol (Offline Sync Mechanic)
+* **Theme**: Surveyor Team Alpha has entered a heavy shielding zone (Sector 188 courtyard) where active connections to the gateway are blocked. You must queue transmission commands while offline.
+* **App Mechanic**: Utilizes the browser's `offline` / `online` event handlers and deferred auto-save queue.
+* **Task Description**:
+  1. Turn off your network connection (or toggle offline mode in browser DevTools). The HUD badge will shift to `OFFLINE`.
+  2. In the TEXT editor, enter the passcode command: `GATEWAY_DISCHARGE_CONFIRMED`.
+  3. Reconnect to the network (go online).
+  4. The browser's online listener will automatically trigger `pollText` and flush the queued changes to the server.
+  5. The terminal registers that the handshake arrived as a "delayed offline packet", completing the mission.
+
+---
+
+## 4. CRT Sync Calibration (SYS://LOG Interface Mechanic)
+* **Theme**: The terminal is suffering from vertical sync distortion due to high local electromagnetic fields. You must tap the CRT casing to recalibrate the system log.
+* **App Mechanic**: Toggles the visibility state of the System Log panel and records click patterns.
+* **Task Description**:
+  1. The user must click the `SYS://LOG` header bar three times in rapid succession (double-click followed by a single click within 1 second).
+  2. This triggers a visual easter egg (the scanline flicker pauses briefly or color shifts) and writes a calibration sequence `[OK] V-SYNC ALIGNED` to the log.
+  3. Typing `check` verifies the V-SYNC status log is active.
+
+---
+
+## 5. Phantom Doorway (CSS Styling & Tab Injection Mechanic)
+* **Theme**: You hear a faint humming sound coming from behind the yellow wallpaper. A door appears where there was only a wall.
+* **App Mechanic**: Dynamic DOM injection and CSS class modifications.
+* **Task Description**:
+  1. Run the terminal command `scan` while the room's TTL is set to exactly `1800` (30 minutes).
+  2. The receiver detects "Humming resonance at 30 minutes".
+  3. The script injects a new, hidden tab button on the main navigation panel: `[DOORWAY]`.
+  4. Clicking the `[DOORWAY]` tab displays a custom classified CSS visual glitch layout containing the secret coordinates.
+
+---
+
+## 6. Zero-Knowledge Cryptographic Lock (URL Hash Mechanic)
+* **Theme**: The team locked their logs with a key that is never sent to the server. You must craft a Room ID that naturally derives a key with a cryptographic "Liminal Pattern".
+* **App Mechanic**: URL hash parsing and E2EE key derivation.
+* **Task Description**:
+  1. The user must create a session where the Room ID (first 8 characters of the URL hash) contains at least three zeros (e.g. `http://localhost:8080/#000abc...`).
+  2. This represents a "Null Void" address zone.
+  3. When initialized, the terminal reads `state.roomId`, detects the null coordinates, and unlocks a special log file describing Level 37 navigation.
+
+---
+
+## 7. Radio Silence Protocol (Offline Sync Mechanic) Tasks
+Detailed mission ideas and variations exploiting the offline queue mechanic:
+
+### 7.1. Offline Buffer Overflow (`OFFLINE_OVERFLOW.sh`)
+* **Theme**: The gateway receiver queue is jammed by static noise. You must load a series of offline messages to purge the buffer once connection re-establishes.
+* **Task Description**:
+  1. Disconnect the device from the network.
+  2. Write and auto-save three distinct passwords sequentially in offline mode (storing local edit history or offline queued text).
+  3. Turn the network back on.
+  4. The client flushes the sync history, clearing the jam and unlocking the next terminal log.
+
+### 7.2. Silent Echo Signature (`SILENT_ECHO.net`)
+* **Theme**: Parallel realities can only communicate when the primary gateway frequency is fully muted (radio silence).
+* **Task Description**:
+  1. The user goes offline.
+  2. While offline, they write `SILENT_ECHO` in the text area.
+  3. A second device/window also goes offline and writes the same.
+  4. Both devices reconnect to the internet within 10 seconds of each other.
+  5. The server matches the timestamps of the offline modification times, verifying the parallel silent handshake.

@@ -79,6 +79,10 @@ export function initCollapsible() {
     if (docsHeader) {
         docsHeader.addEventListener('click', () => {
             gameState.collapsedSections.docs = !gameState.collapsedSections.docs;
+            // Mark all unlocked docs as seen when interacting with header
+            gameState.unlockedDocs.forEach(id => {
+                if (!gameState.seenDocs.includes(id)) gameState.seenDocs.push(id);
+            });
             saveProgress();
             updateStoryUI();
         });
@@ -88,6 +92,10 @@ export function initCollapsible() {
     if (missionsHeader) {
         missionsHeader.addEventListener('click', () => {
             gameState.collapsedSections.missions = !gameState.collapsedSections.missions;
+            // Mark all completed missions as seen when interacting with header
+            gameState.completedSideMissions.forEach(id => {
+                if (!gameState.seenMissions.includes(id)) gameState.seenMissions.push(id);
+            });
             saveProgress();
             updateStoryUI();
         });
@@ -97,6 +105,10 @@ export function initCollapsible() {
     if (galleryHeader) {
         galleryHeader.addEventListener('click', () => {
             gameState.collapsedSections.gallery = !gameState.collapsedSections.gallery;
+            // Mark all unlocked anomalies as seen when interacting with header
+            gameState.unlockedAnomalies.forEach(id => {
+                if (!gameState.seenAnomalies.includes(id)) gameState.seenAnomalies.push(id);
+            });
             saveProgress();
             updateStoryUI();
         });
@@ -108,15 +120,18 @@ export function renderSideMissions() {
     if (!list) return;
     list.innerHTML = '';
 
-    Object.keys(SIDE_MISSIONS).forEach(id => {
+    const sideIds = Object.keys(SIDE_MISSIONS);
+
+    sideIds.forEach((id, idx) => {
         const mission = SIDE_MISSIONS[id];
         const isCompleted = gameState.completedSideMissions.includes(id);
+        const isUnlocked = idx === 0 || gameState.completedSideMissions.includes(sideIds[idx - 1]);
 
         const el = document.createElement('div');
-        el.className = `doc-item ${isCompleted ? '' : 'active'}`;
+        el.className = `doc-item ${isCompleted ? '' : isUnlocked ? 'active' : 'locked'}`;
 
         const titleSpan = document.createElement('span');
-        titleSpan.textContent = mission.title;
+        titleSpan.textContent = isUnlocked ? mission.title : 'OPERATION_[LOCKED].bin';
 
         const statusSpan = document.createElement('span');
         statusSpan.className = 'text-[9px] px-1 rounded border';
@@ -124,16 +139,30 @@ export function renderSideMissions() {
             statusSpan.textContent = 'COMPLETED';
             statusSpan.style.borderColor = '#10b981';
             statusSpan.style.color = '#10b981';
-        } else {
+        } else if (isUnlocked) {
             statusSpan.textContent = 'ACTIVE';
             statusSpan.style.borderColor = '#eab308';
             statusSpan.style.color = '#eab308';
+        } else {
+            statusSpan.textContent = 'LOCKED';
+            statusSpan.style.borderColor = 'var(--glass-border)';
+            statusSpan.style.color = 'var(--text-muted)';
         }
 
         el.appendChild(titleSpan);
         el.appendChild(statusSpan);
 
         el.onclick = () => {
+            if (!isUnlocked) {
+                const terminal = document.getElementById('story-terminal-output');
+                if (terminal) {
+                    terminal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                printLine(`\n[-] OPERATION LOCKED`, 'err');
+                printLine(`You must complete the previous parallel operations before unlocking this channel.`, 'warn');
+                return;
+            }
+
             if (isCompleted && !gameState.seenMissions.includes(id)) {
                 gameState.seenMissions.push(id);
                 saveProgress();

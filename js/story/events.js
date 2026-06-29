@@ -16,37 +16,37 @@ export function checkSideMissions() {
     if (!gameState.completedSideMissions.includes('SIDE-1')) {
         if (state.lastSyncClientId && state.lastSyncClientId !== state.clientId) {
             gameState.completedSideMissions.push('SIDE-1');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: TIMELINE_SPLIT.sh', 'ok');
+            printLine('[+] PARALLEL OPERATION COMPLETED: TIMELINE_SPLIT.sh', 'ok');
             printLine('Connection from parallel client node detected. Handshake established.', 'ok');
             completedAny = true;
         }
     }
 
     // SIDE-2: Payload Decryption
-    if (!gameState.completedSideMissions.includes('SIDE-2')) {
+    if (gameState.completedSideMissions.includes('SIDE-1') && !gameState.completedSideMissions.includes('SIDE-2')) {
         if (state.lastSyncClientId && state.lastSyncClientId !== state.clientId && editorVal === 'OVERRIDE') {
             gameState.completedSideMissions.push('SIDE-2');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: SIGNAL_OVERRIDE.bin', 'ok');
+            printLine('[+] PARALLEL OPERATION COMPLETED: SIGNAL_OVERRIDE.bin', 'ok');
             printLine('Decrypted remote override payload successfully.', 'ok');
             completedAny = true;
         }
     }
 
     // SIDE-3: Gateway Uplink
-    if (!gameState.completedSideMissions.includes('SIDE-3')) {
+    if (gameState.completedSideMissions.includes('SIDE-2') && !gameState.completedSideMissions.includes('SIDE-3')) {
         if (state.lastSyncIp && state.clientIp && state.lastSyncIp !== state.clientIp) {
             gameState.completedSideMissions.push('SIDE-3');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: EXTERNAL_BEACON.net', 'ok');
+            printLine('[+] PARALLEL OPERATION COMPLETED: EXTERNAL_BEACON.net', 'ok');
             printLine('Uplink confirmed from external network node. Client IP differs.', 'ok');
             completedAny = true;
         }
     }
 
     // SIDE-4: Null Void Sector
-    if (!gameState.completedSideMissions.includes('SIDE-4')) {
+    if (gameState.completedSideMissions.includes('SIDE-3') && !gameState.completedSideMissions.includes('SIDE-4')) {
         if (state.roomId && state.roomId.startsWith('000')) {
             gameState.completedSideMissions.push('SIDE-4');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: NULL_VOID_SECTOR.bin', 'ok');
+            printLine('[+] PARALLEL OPERATION COMPLETED: NULL_VOID_SECTOR.bin', 'ok');
             printLine('Cryptographic Null Void coordinate detected in URL hash.', 'ok');
             printLine('Decrypted secret logs for Level 37 poolroom structures.', 'ok');
             completedAny = true;

@@ -181,7 +181,7 @@ require_once __DIR__ . '/api.php';
                 <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
                     <div id="story-missions-header" class="mono text-xs font-bold border-b pb-1 flex justify-between items-center cursor-pointer select-none" style="border-color:var(--glass-border); color:var(--accent-primary)">
                         <div class="flex items-center gap-2">
-                            <span>[INDEPENDENT_MISSIONS]</span>
+                            <span>[PARALLEL_OPERATIONS]</span>
                             <span id="story-missions-toggle" style="color:var(--text-muted)">[-]</span>
                             <span id="story-missions-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
                         </div>
