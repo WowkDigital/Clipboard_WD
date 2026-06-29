@@ -19,12 +19,45 @@ export function initStory() {
 
     // Hook up terminal input listener
     const input = document.getElementById('story-terminal-input');
+    const cmdHistory = [];
+    let historyIdx = -1;
+    let tempInput = '';
+
     if (input) {
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const cmd = input.value;
+                const cmd = input.value.trim();
+                if (cmd) {
+                    if (cmdHistory.length === 0 || cmdHistory[cmdHistory.length - 1] !== cmd) {
+                        cmdHistory.push(cmd);
+                    }
+                }
+                historyIdx = -1;
+                tempInput = '';
                 input.value = '';
                 handleCommand(cmd);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (cmdHistory.length === 0) return;
+                
+                if (historyIdx === -1) {
+                    tempInput = input.value;
+                    historyIdx = cmdHistory.length - 1;
+                } else if (historyIdx > 0) {
+                    historyIdx--;
+                }
+                input.value = cmdHistory[historyIdx];
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIdx === -1) return;
+                
+                if (historyIdx < cmdHistory.length - 1) {
+                    historyIdx++;
+                    input.value = cmdHistory[historyIdx];
+                } else {
+                    historyIdx = -1;
+                    input.value = tempInput;
+                }
             }
         });
     }

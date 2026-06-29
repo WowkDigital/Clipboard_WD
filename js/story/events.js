@@ -248,21 +248,27 @@ export async function handleCommand(cmdLine) {
     switch (cmd) {
         case 'help':
             printLine('AVAILABLE COMMANDS:', 'sys');
-            printLine('  help           - Display this command matrix.');
-            printLine('  status         - Retrieve terminal connection details.');
-            printLine('  scan           - Calibrate frequency receiver to scan for local anomalies.');
-            printLine('  check          - Verify independent sub-channel bypass missions.');
-            printLine('  docs           - Show list of discovered documents.');
-            printLine('  read <id>      - Read a document. (e.g., read DOC-1)');
-            printLine('  gallery        - Show captured image data details.');
-            printLine('  view <id>      - View an anomaly photo. (e.g., view IMG-1)');
+            printLine('');
+            printLine('--- CORE PROTOCOLS (STORY PROGRESSION) ---', 'sys');
+            printLine('  docs           - Show list of decrypted documents.');
+            printLine('  read <id>      - Read document contents (e.g., read DOC-1).');
+            printLine('  scan           - Calibrate frequency and scan for anomalies/gates.');
             printLine('  unlock <code>  - Submit decryption key to open locked archives.');
-            printLine('  ip             - Show current client IP address.');
-            printLine('  mine           - Start CPU mining for cryptographic hash collision.');
-            printLine('  stop           - Stop active decryption mining operation.');
-            printLine('  hint           - Show a hint for the current stage if you are stuck.');
-            printLine('  clear          - Clear terminal screen buffer.');
-            printLine('  reset          - Reset all story progress.');
+            printLine('  hint           - Get a directive clue for your current location.');
+            printLine('');
+            printLine('--- PARALLEL BYPASSES (SIDE MISSIONS) ---', 'sys');
+            printLine('  check          - Run handshake verification on bypass networks.');
+            printLine('  mine           - Initiate local PoW miner for hash collision.');
+            printLine('  stop           - Abort active decryption mining.');
+            printLine('  ip             - Query client IP address.');
+            printLine('');
+            printLine('--- SYSTEM MAINTENANCE & COSMETICS ---', 'sys');
+            printLine('  help           - Display this command directory.');
+            printLine('  status         - Query connection strength and encryption status.');
+            printLine('  gallery        - Show captured anomaly database records.');
+            printLine('  view <id>      - Load anomaly image in modal (e.g., view IMG-1).');
+            printLine('  clear          - Clear terminal console buffer.');
+            printLine('  reset          - Perform hard factory reset of story progress.');
             break;
 
         case 'ip':
