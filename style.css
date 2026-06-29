@@ -628,6 +628,7 @@ textarea::placeholder {
     color: #38bdf8;
     scrollbar-width: thin;
     scrollbar-color: var(--glass-border) transparent;
+    white-space: pre-wrap !important;
 }
 
 #story-terminal-output::-webkit-scrollbar {

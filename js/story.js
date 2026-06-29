@@ -429,17 +429,17 @@ function handleCommand(cmdLine) {
 
     switch (cmd) {
         case 'help':
-            printLine('AVAILABLE COMMANDS:');
-            printLine('  help            Display this command matrix.');
-            printLine('  status          Retrieve terminal connection details.');
-            printLine('  scan            Calibrate frequency receiver to scan for local anomalies.');
-            printLine('  docs            Show list of discovered documents.');
-            printLine('  read <id>       Read a document. Example: read DOC-1');
-            printLine('  gallery         Show captured image data details.');
-            printLine('  view <id>       View an anomaly photo. Example: view IMG-1');
-            printLine('  unlock <code>   Submit decryption key to open locked archives.');
-            printLine('  clear           Clear terminal screen buffer.');
-            printLine('  reset           Reset all story progress.');
+            printLine('AVAILABLE COMMANDS:', 'sys');
+            printLine('  help           - Display this command matrix.');
+            printLine('  status         - Retrieve terminal connection details.');
+            printLine('  scan           - Calibrate frequency receiver to scan for local anomalies.');
+            printLine('  docs           - Show list of discovered documents.');
+            printLine('  read <id>      - Read a document. (e.g., read DOC-1)');
+            printLine('  gallery        - Show captured image data details.');
+            printLine('  view <id>      - View an anomaly photo. (e.g., view IMG-1)');
+            printLine('  unlock <code>  - Submit decryption key to open locked archives.');
+            printLine('  clear          - Clear terminal screen buffer.');
+            printLine('  reset          - Reset all story progress.');
             break;
 
         case 'status':

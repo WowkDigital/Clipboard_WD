@@ -132,49 +132,44 @@ require_once __DIR__ . '/api.php';
             </div>
 
             <!-- Tab content: STORY MODE -->
-            <div id="tab-story" class="flex flex-col gap-4 hidden">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Left: Interactive Terminal -->
-                    <div class="md:col-span-2 flex flex-col gap-2">
-                        <div class="mono text-[10px] flex items-center justify-between pb-1 border-b" style="border-color:var(--glass-border)">
-                            <span class="flex items-center gap-1.5">
-                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
-                                <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">GATEWAY://TERMINAL_V1.0</span>
-                            </span>
-                            <span style="color:var(--text-muted)">[SESSION: ENCRYPTED]</span>
-                        </div>
-                        <div id="story-terminal-output" class="p-4 border rounded overflow-y-auto" style="height: 320px; border-color:var(--glass-border);">
-                            <!-- Simulation text will be populated dynamically -->
-                        </div>
-                        <div class="flex items-center gap-2 border rounded bg-black/60 p-2" style="border-color:var(--glass-border)">
-                            <span class="mono text-xs font-bold text-sky-400 shrink-0 select-none">USR://&gt;</span>
-                            <input type="text" id="story-terminal-input" class="bg-transparent border-none outline-none mono text-xs text-sky-300 w-full focus:ring-0 p-0" style="caret-color: #38bdf8;" placeholder="Type 'help' for instructions..." autofocus autocomplete="off">
-                        </div>
+            <div id="tab-story" class="flex flex-col gap-5 hidden">
+                <!-- Terminal Section -->
+                <div class="flex flex-col gap-2">
+                    <div class="mono text-[10px] flex items-center justify-between pb-1 border-b" style="border-color:var(--glass-border)">
+                        <span class="flex items-center gap-1.5">
+                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
+                            <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">GATEWAY://TERMINAL_V1.0</span>
+                        </span>
+                        <span style="color:var(--text-muted)">[SESSION: ENCRYPTED]</span>
                     </div>
+                    <div id="story-terminal-output" class="p-4 border rounded overflow-y-auto" style="height: 300px; border-color:var(--glass-border);">
+                        <!-- Simulation text will be populated dynamically -->
+                    </div>
+                    <div class="flex items-center gap-2 border rounded bg-black/60 p-2" style="border-color:var(--glass-border)">
+                        <span class="mono text-xs font-bold text-sky-400 shrink-0 select-none">USR://&gt;</span>
+                        <input type="text" id="story-terminal-input" class="bg-transparent border-none outline-none mono text-xs text-sky-300 w-full focus:ring-0 p-0" style="caret-color: #38bdf8;" placeholder="Type 'help' for instructions..." autofocus autocomplete="off">
+                    </div>
+                </div>
 
-                    <!-- Right: Decrypted Info & Gallery -->
-                    <div class="flex flex-col gap-4">
-                        <!-- Decrypted Documents list -->
-                        <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
-                            <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
-                                <span>[DECRYPTED_LOGS]</span>
-                                <span id="docs-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/5</span>
-                            </div>
-                            <div id="story-docs-list" class="flex flex-col gap-1.5 max-h-[130px] overflow-y-auto">
-                                <!-- Decrypted items with lock/unlock states -->
-                            </div>
-                        </div>
+                <!-- Decrypted Documents list -->
+                <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
+                    <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <span>[DECRYPTED_LOGS]</span>
+                        <span id="docs-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/5</span>
+                    </div>
+                    <div id="story-docs-list" class="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto">
+                        <!-- Decrypted items with lock/unlock states -->
+                    </div>
+                </div>
 
-                        <!-- Gallery list -->
-                        <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
-                            <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
-                                <span>[CAPTURED_ANOMALIES]</span>
-                                <span id="gallery-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
-                            </div>
-                            <div id="story-gallery-grid" class="grid grid-cols-2 gap-2 max-h-[145px] overflow-y-auto">
-                                <!-- Discovered photos thumbnail grid -->
-                            </div>
-                        </div>
+                <!-- Gallery list -->
+                <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
+                    <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <span>[CAPTURED_ANOMALIES]</span>
+                        <span id="gallery-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
+                    </div>
+                    <div id="story-gallery-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-[260px] overflow-y-auto">
+                        <!-- Discovered photos thumbnail grid -->
                     </div>
                 </div>
             </div>
