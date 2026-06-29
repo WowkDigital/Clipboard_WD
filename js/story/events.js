@@ -209,6 +209,36 @@ export async function handleCommand(cmdLine) {
     const line = cmdLine.trim();
     if (!line) return;
 
+    if (state.isAdminPrompt) {
+        state.isAdminPrompt = false;
+        printLine('USR://> *********', 'sys');
+        if (line === 'admin_31415') {
+            gameState.stage = 5;
+            
+            // Unlock all documents
+            Object.keys(DOCUMENTS).forEach(id => {
+                if (!gameState.unlockedDocs.includes(id)) gameState.unlockedDocs.push(id);
+            });
+            
+            // Unlock all anomalies
+            Object.keys(ANOMALIES).forEach(id => {
+                if (!gameState.unlockedAnomalies.includes(id)) gameState.unlockedAnomalies.push(id);
+            });
+            
+            // Complete all side missions
+            Object.keys(SIDE_MISSIONS).forEach(id => {
+                if (!gameState.completedSideMissions.includes(id)) gameState.completedSideMissions.push(id);
+            });
+            
+            printLine('[+] ADMIN BYPASS TRIGGERED: All gateway layers decrypted.', 'ok');
+            saveProgress();
+            updateStoryUI();
+        } else {
+            printLine('[-] INVALID ADMIN PASSWORD. ACCESS DENIED.', 'err');
+        }
+        return;
+    }
+
     printLine(`USR://> ${line}`, 'sys');
 
     const parts = line.split(/\s+/);
@@ -403,6 +433,15 @@ export async function handleCommand(cmdLine) {
                 state.abortMining();
             } else {
                 printLine('[-] No active decryption miner running.', 'err');
+            }
+            break;
+
+        case 'admin':
+            if (arg.trim() === 'access') {
+                state.isAdminPrompt = true;
+                printLine('[?] ENTER ADMIN ACCESS KEY:', 'warn');
+            } else {
+                printLine('[-] Usage: admin access', 'err');
             }
             break;
 

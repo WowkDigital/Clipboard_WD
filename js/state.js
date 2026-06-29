@@ -18,6 +18,7 @@ export const state = {
     onPollTextSuccess: null,
     isMining: false,
     abortMining: null,
+    isAdminPrompt: false,
 };
 
 function getOrCreateClientId() {
