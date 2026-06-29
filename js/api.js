@@ -59,7 +59,7 @@ export async function pollText() {
         const headers = { 'X-Requested-With': 'XMLHttpRequest' };
         if (state.lastModified) headers['If-Modified-Since'] = state.lastModified;
 
-        const res = await fetch(`?action=get_text&room_hash=${rh}`, { headers });
+        const res = await fetch(`api.php?action=get_text&room_hash=${rh}`, { headers });
 
         if (res.status === 304) {
             setStatus('online', 'ONLINE');
@@ -189,7 +189,7 @@ export async function saveText(isRetry = false) {
             ttl: ttl
         };
 
-        const res = await fetch('?action=save_text', {
+        const res = await fetch('api.php?action=save_text', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -320,7 +320,7 @@ export async function resetTTL() {
             room_hash: rh,
             ttl: ttl
         };
-        const res = await fetch('?action=reset_ttl', {
+        const res = await fetch('api.php?action=reset_ttl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -393,7 +393,7 @@ export async function uploadFile(file) {
 function uploadWithProgress(form, onProgress) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '?action=upload_file');
+        xhr.open('POST', 'api.php?action=upload_file');
         xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
         xhr.onload = () => {
             try {
@@ -420,7 +420,7 @@ export async function loadFiles() {
     if (!state.cryptoKey) return;
     try {
         const rh = await hashRoomId(state.roomId);
-        const res = await fetch(`?action=list_files&room_hash=${rh}`);
+        const res = await fetch(`api.php?action=list_files&room_hash=${rh}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
@@ -440,7 +440,7 @@ export async function downloadFile(fileId, encMeta, ivMeta, fileName) {
 
     try {
         const rh = await hashRoomId(state.roomId);
-        const res = await fetch(`?action=download_file&file_id=${fileId}&room_hash=${rh}`);
+        const res = await fetch(`api.php?action=download_file&file_id=${fileId}&room_hash=${rh}`);
 
         if (res.status === 410) { log(`FILE EXPIRED`, 'warn'); await loadFiles(); return; }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -487,7 +487,7 @@ export async function deleteFile(fileId, fileName) {
             file_id: fileId,
             room_hash: rh
         };
-        const res = await fetch('?action=delete_file', {
+        const res = await fetch('api.php?action=delete_file', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),

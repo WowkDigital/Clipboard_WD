@@ -133,7 +133,7 @@ export function renderFiles(files) {
 
         const dlBtn = document.createElement('button');
         dlBtn.className = 'btn';
-        dlBtn.textContent = 'DECRYPT';
+        dlBtn.textContent = 'DOWNLOAD';
         dlBtn.style.padding = '3px 10px';
         dlBtn.style.fontSize = '10px';
 
@@ -151,6 +151,27 @@ export function renderFiles(files) {
         item.appendChild(delBtn);
         list.appendChild(item);
 
+        let deleteClickedOnce = false;
+        let deleteTimeout = null;
+
+        const confirmDelete = async (fileName) => {
+            if (!deleteClickedOnce) {
+                deleteClickedOnce = true;
+                delBtn.textContent = 'CONFIRM';
+                delBtn.classList.add('pulse');
+                deleteTimeout = setTimeout(() => {
+                    deleteClickedOnce = false;
+                    delBtn.textContent = 'DELETE';
+                    delBtn.classList.remove('pulse');
+                }, 4000);
+            } else {
+                clearTimeout(deleteTimeout);
+                delBtn.disabled = true;
+                delBtn.textContent = 'DELETING...';
+                await deleteFile(f.file_id, fileName);
+            }
+        };
+
         // Decrypt metadata client-side to show filename
         decrypt(state.cryptoKey, f.encrypted_meta, f.iv_meta)
             .then(metaStr => {
@@ -158,21 +179,11 @@ export function renderFiles(files) {
                 nameEl.textContent = meta.name;
                 sizeEl.textContent = fmtSize(meta.size);
                 dlBtn.onclick = () => downloadFile(f.file_id, f.encrypted_meta, f.iv_meta, meta.name);
-                delBtn.onclick = async () => {
-                    const confirmed = await showConfirm(`Delete file "${meta.name}" permanently?`);
-                    if (confirmed) {
-                        await deleteFile(f.file_id, meta.name);
-                    }
-                };
+                delBtn.onclick = () => confirmDelete(meta.name);
             })
             .catch(() => {
                 nameEl.textContent = '[encrypted]';
-                delBtn.onclick = async () => {
-                    const confirmed = await showConfirm(`Delete this encrypted file permanently?`);
-                    if (confirmed) {
-                        await deleteFile(f.file_id, '[encrypted]');
-                    }
-                };
+                delBtn.onclick = () => confirmDelete('[encrypted]');
             });
     });
 }
