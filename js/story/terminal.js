@@ -40,7 +40,7 @@ function processQueue() {
     // Calculate line delay dynamically to finish the entire batch in ~1.0 second.
     // Capped at max 80ms for optimal readability.
     const totalLines = printQueue.length;
-    lineDelay = totalLines > 0 ? Math.min(80, 1000 / totalLines) : 50;
+    lineDelay = totalLines > 0 ? Math.min(200, 1000 / totalLines) : 50;
     if (lineDelay < 10) lineDelay = 10; // Minimum 10ms
 
     printNextLine();
