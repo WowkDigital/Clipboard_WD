@@ -463,11 +463,11 @@ function gc_run(SQLite3 $db): void {
     // Purge expired text rooms
     $db->exec("DELETE FROM rooms WHERE (updated_at + COALESCE(ttl, 3600)) < $now");
 
-    // Find expired files (where file created_at + room ttl < now, or room doesn't exist anymore)
+    // Find expired files (where file created_at + room ttl < now)
     $res = $db->query("
         SELECT f.file_id FROM files f
         LEFT JOIN rooms r ON f.room_hash = r.room_hash
-        WHERE (f.created_at + COALESCE(r.ttl, 3600)) < $now OR r.room_hash IS NULL
+        WHERE (f.created_at + COALESCE(r.ttl, 3600)) < $now
     ");
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         @unlink(UPLOAD_DIR . $row['file_id']);
@@ -477,7 +477,7 @@ function gc_run(SQLite3 $db): void {
         DELETE FROM files WHERE file_id IN (
             SELECT f.file_id FROM files f
             LEFT JOIN rooms r ON f.room_hash = r.room_hash
-            WHERE (f.created_at + COALESCE(r.ttl, 3600)) < $now OR r.room_hash IS NULL
+            WHERE (f.created_at + COALESCE(r.ttl, 3600)) < $now
         )
     ");
 
