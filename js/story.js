@@ -15,6 +15,7 @@ export function initStory() {
     state.onPollTextSuccess = () => {
         checkSideMissions();
     };
+    checkSideMissions();
 
     // Hook up terminal input listener
     const input = document.getElementById('story-terminal-input');

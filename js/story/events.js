@@ -509,11 +509,11 @@ export function startBypassMiner() {
                 liveLine.update(`[+] SUCCESS! Key found: ${key}`);
                 printLine(`[+] Decrypted hash signature: ${derived}`, 'ok');
                 printLine(`[+] Total hashes computed: ${counter.toLocaleString()}`, 'ok');
-                printLine(`[+] Applying hash collision... Reloading gateway...`, 'warn');
-                
-                setTimeout(() => {
-                    location.hash = '#' + key;
-                }, 2000);
+                printLine(`\n[!] BYPASS KEY ACQUIRED: ${key}`, 'sys');
+                printLine(`[!] MANUAL SYNC REQUIRED:`, 'warn');
+                printLine(`1. Copy the key above.`, 'warn');
+                printLine(`2. Paste it in your browser URL bar after the '#' symbol (replacing the current key).`, 'warn');
+                printLine(`3. Press Enter to load the parallel sector and complete the gate bypass.`, 'warn');
                 return;
             }
         }
