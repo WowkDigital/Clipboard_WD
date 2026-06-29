@@ -139,6 +139,13 @@ export function renderSideMissions() {
                 saveProgress();
                 updateStoryUI();
             }
+            
+            // Scroll to terminal so user knows content appeared there
+            const terminal = document.getElementById('story-terminal-output');
+            if (terminal) {
+                terminal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
             printLine(`\n--- MISSION DETAILS: ${mission.title} ---`, 'sys');
             printLine(mission.desc, '');
             printLine(`Status: ${isCompleted ? 'COMPLETED' : 'ACTIVE'}`, isCompleted ? 'ok' : 'warn');
@@ -171,7 +178,14 @@ export function renderDocuments() {
             statusSpan.textContent = 'OPEN';
             statusSpan.style.borderColor = '#10b981';
             statusSpan.style.color = '#10b981';
-            el.onclick = () => readDocumentInTerminal(id);
+            el.onclick = () => {
+                // Scroll to terminal so user knows content appeared there
+                const terminal = document.getElementById('story-terminal-output');
+                if (terminal) {
+                    terminal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                readDocumentInTerminal(id);
+            };
         } else {
             statusSpan.textContent = 'LOCKED';
             statusSpan.style.borderColor = 'var(--glass-border)';
