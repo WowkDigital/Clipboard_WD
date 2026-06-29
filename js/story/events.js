@@ -2,12 +2,13 @@
 
 import { DOCUMENTS, ANOMALIES, SIDE_MISSIONS } from './db.js';
 import { gameState, saveProgress, resetProgress } from './state.js';
-import { printLine, clearTerminal } from './terminal.js';
+import { printLine, clearTerminal, printLiveLine } from './terminal.js';
 import { updateStoryUI, readDocumentInTerminal, openImageModal } from './ui.js';
 import { state } from '../state.js';
+import { hashRoomId } from '../crypto.js';
 
 // ── Side Missions Check System ───────────────────────────────
-export function checkSideMissions() {
+export async function checkSideMissions() {
     let completedAny = false;
     const editor = document.getElementById('editor');
     const editorVal = editor ? editor.value.trim() : '';
@@ -50,6 +51,20 @@ export function checkSideMissions() {
             printLine('Cryptographic Null Void coordinate detected in URL hash.', 'ok');
             printLine('Decrypted secret logs for Level 37 poolroom structures.', 'ok');
             completedAny = true;
+        }
+    }
+
+    // SIDE-5: Hash Collision
+    if (gameState.completedSideMissions.includes('SIDE-4') && !gameState.completedSideMissions.includes('SIDE-5')) {
+        const hashVal = location.hash.slice(1);
+        if (hashVal && hashVal.length === 64) {
+            const derivedHash = await hashRoomId(hashVal);
+            if (derivedHash.startsWith('00000')) {
+                gameState.completedSideMissions.push('SIDE-5');
+                printLine('[+] PARALLEL OPERATION COMPLETED: HASH_COLLISION.bin', 'ok');
+                printLine('Hash collision found! Cryptographic gate bypassed.', 'ok');
+                completedAny = true;
+            }
         }
     }
 
@@ -190,7 +205,7 @@ export function executeUnlock(code) {
 }
 
 // ── Command Parsing ──────────────────────────────────────────
-export function handleCommand(cmdLine) {
+export async function handleCommand(cmdLine) {
     const line = cmdLine.trim();
     if (!line) return;
 
@@ -213,6 +228,8 @@ export function handleCommand(cmdLine) {
             printLine('  view <id>      - View an anomaly photo. (e.g., view IMG-1)');
             printLine('  unlock <code>  - Submit decryption key to open locked archives.');
             printLine('  ip             - Show current client IP address.');
+            printLine('  mine           - Start CPU mining for cryptographic hash collision.');
+            printLine('  stop           - Stop active decryption mining operation.');
             printLine('  hint           - Show a hint for the current stage if you are stuck.');
             printLine('  clear          - Clear terminal screen buffer.');
             printLine('  reset          - Reset all story progress.');
@@ -224,7 +241,7 @@ export function handleCommand(cmdLine) {
 
         case 'check':
             printLine('Checking sub-channel bypass networks...', 'sys');
-            checkSideMissions();
+            await checkSideMissions();
             Object.keys(SIDE_MISSIONS).forEach(id => {
                 const isDone = gameState.completedSideMissions.includes(id);
                 if (isDone && !gameState.seenMissions.includes(id)) {
@@ -260,7 +277,7 @@ export function handleCommand(cmdLine) {
             break;
 
         case 'status':
-            checkSideMissions();
+            await checkSideMissions();
             printLine('LIMIT GATEWAY CORE V1.0');
             printLine(`SIGNAL STRENGTH: ${gameState.stage >= 4 ? '95%' : gameState.stage >= 2 ? '70%' : '37%'}`, 'warn');
             
@@ -279,7 +296,7 @@ export function handleCommand(cmdLine) {
             break;
 
         case 'scan':
-            checkSideMissions();
+            await checkSideMissions();
             // Check if user is in Stage 1 and needs to calibrate to 432 Hz
             if (gameState.stage === 1) {
                 printLine('[+] Scanning frequency band...', 'warn');
@@ -361,11 +378,45 @@ export function handleCommand(cmdLine) {
             executeUnlock(arg);
             break;
 
+        case 'mine':
+            if (state.isMining) {
+                printLine('[-] Decryption miner is already running.', 'err');
+                break;
+            }
+            const isSide5Unlocked = gameState.completedSideMissions.includes('SIDE-4');
+            const isSide5Completed = gameState.completedSideMissions.includes('SIDE-5');
+            
+            if (!isSide5Unlocked) {
+                printLine('[-] HASH_COLLISION.bin is locked. You must decrypt previous sectors first.', 'err');
+                break;
+            }
+            if (isSide5Completed) {
+                printLine('[+] HASH_COLLISION.bin is already completed.', 'ok');
+                break;
+            }
+            
+            startBypassMiner();
+            break;
+
+        case 'stop':
+            if (state.isMining && typeof state.abortMining === 'function') {
+                state.abortMining();
+            } else {
+                printLine('[-] No active decryption miner running.', 'err');
+            }
+            break;
+
         case 'clear':
+            if (state.isMining && typeof state.abortMining === 'function') {
+                state.abortMining();
+            }
             clearTerminal();
             break;
 
         case 'reset':
+            if (state.isMining && typeof state.abortMining === 'function') {
+                state.abortMining();
+            }
             resetProgress();
             clearTerminal();
             printLine('[+] SYSTEM PROGRESS RESET.', 'warn');
@@ -377,4 +428,59 @@ export function handleCommand(cmdLine) {
             printLine(`[-] Command not recognized: ${cmd}. Type 'help' for instructions.`, 'err');
             break;
     }
+}
+
+export function startBypassMiner() {
+    printLine('[+] INITIATING COGNITIVE DECRYPTION (PROOF OF WORK)...', 'sys');
+    printLine('[+] TARGET PATTERN: room_hash starts with "00000"', 'sys');
+    printLine('[!] Press "CLEAR" or type "stop" to abort mining.', 'warn');
+
+    state.isMining = true;
+    let totalHashes = 0;
+    const startTime = Date.now();
+    const liveLine = printLiveLine('[ ] Initializing hash generator...', 'warn');
+    
+    let isAborted = false;
+    state.abortMining = () => {
+        isAborted = true;
+        state.isMining = false;
+        state.abortMining = null;
+        liveLine.update('[!] Decryption miner aborted by user.');
+    };
+
+    async function mineBatch() {
+        if (isAborted) return;
+        
+        const batchSize = 350;
+        for (let i = 0; i < batchSize; i++) {
+            const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            const derived = await hashRoomId(key);
+            
+            if (derived.startsWith('00000')) {
+                state.isMining = false;
+                state.abortMining = null;
+                liveLine.update(`[+] SUCCESS! Key found: ${key}`);
+                printLine(`[+] Decrypted hash signature: ${derived}`, 'ok');
+                printLine(`[+] Total hashes computed: ${(totalHashes + i + 1).toLocaleString()}`, 'ok');
+                printLine(`[+] Applying hash collision... Reloading gateway...`, 'warn');
+                
+                setTimeout(() => {
+                    location.hash = '#' + key;
+                }, 2000);
+                return;
+            }
+        }
+        
+        totalHashes += batchSize;
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speed = Math.round(totalHashes / elapsed);
+        
+        liveLine.update(`[ ] Hashes tried: ${totalHashes.toLocaleString()} | Speed: ${speed.toLocaleString()} H/s`);
+        
+        setTimeout(mineBatch, 0);
+    }
+    
+    mineBatch();
 }

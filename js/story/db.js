@@ -105,6 +105,11 @@ export const SIDE_MISSIONS = {
         id: 'SIDE-4',
         title: 'NULL_VOID_SECTOR.bin',
         desc: 'LOG RECORD: CRYPTOGRAPHIC ANOMALY.\nWe found a door marked with three white zeroes. Inside, the fluorescent lights were silent and the walls were pure black static. It was a Null Void—a spatial vacuum. Any data stored here is immune to temporal decay.\n\nINSTRUCTIONS: Manipulate the URL hash in your address bar so the Room ID (the first 8 characters following the "#" sign) starts with exactly "000" (e.g., "#000fd..."). Press Enter to reload, then check the terminal to sink the gate into the Null Void.'
+    },
+    'SIDE-5': {
+        id: 'SIDE-5',
+        title: 'HASH_COLLISION.bin',
+        desc: 'LOG RECORD: GATEWAY OVERLOAD PROTOCOL.\nThe gateway demands a key with a specific mathematical pattern to bypass security. You must find a 64-character URL hash key whose SHA-256 hash starts with exactly 5 zeroes ("00000"). This requires executing a local proof-of-work mining operation.\n\nINSTRUCTIONS: Open your browser Developer Console (F12) and run the following miner script to find a valid key. Once found, copy it, set it as your URL hash (after the "#" sign), press Enter to reload the page, and the system will automatically unlock this final channel.\n\nMINER CODE:\nlet k; do { k = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, \'0\')).join(\'\'); let buf = await crypto.subtle.digest(\'SHA-256\', new TextEncoder().encode(k)); let h = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, \'0\')).join(\'\'); if (h.startsWith(\'00000\')) { console.log(\"FOUND KEY:\", k); break; } } while(true);'
     }
 };
 

@@ -16,6 +16,8 @@ export const state = {
     lastSyncIp: '',
     lastSyncClientId: '',
     onPollTextSuccess: null,
+    isMining: false,
+    abortMining: null,
 };
 
 function getOrCreateClientId() {

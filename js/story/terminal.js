@@ -87,5 +87,37 @@ function printNextLine() {
     }
 }
 
+export function printLiveLine(initialText, type = '') {
+    const output = document.getElementById('story-terminal-output');
+    if (!output) return null;
+    const line = document.createElement('div');
+    line.className = 'mono text-xs leading-relaxed py-0.5';
+    
+    if (type === 'ok') {
+        line.style.color = '#10b981';
+    } else if (type === 'err') {
+        line.style.color = '#ef4444';
+    } else if (type === 'warn') {
+        line.style.color = '#eab308';
+    } else if (type === 'sys') {
+        line.style.color = '#a855f7';
+    } else {
+        line.style.color = '#38bdf8';
+    }
+
+    line.textContent = initialText;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+    
+    return {
+        update: (newText) => {
+            line.textContent = newText;
+        },
+        remove: () => {
+            line.remove();
+        }
+    };
+}
+
 
 

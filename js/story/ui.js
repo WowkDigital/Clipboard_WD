@@ -46,6 +46,14 @@ export function updateStoryUI() {
         const hasNewAnomalies = gameState.unlockedAnomalies.some(id => !gameState.seenAnomalies.includes(id));
         galleryNew.classList.toggle('hidden', !hasNewAnomalies);
     }
+
+    // Toggle MINE button visibility based on whether SIDE-5 is active
+    const isSide5Unlocked = gameState.completedSideMissions.includes('SIDE-4');
+    const isSide5Completed = gameState.completedSideMissions.includes('SIDE-5');
+    const mineBtn = document.getElementById('btn-cmd-mine');
+    if (mineBtn) {
+        mineBtn.classList.toggle('hidden', !(isSide5Unlocked && !isSide5Completed));
+    }
 }
 
 export function updateCollapsibleStates() {

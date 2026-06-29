@@ -147,7 +147,7 @@ require_once __DIR__ . '/api.php';
                     </div>
                     <div class="flex items-center gap-2 border rounded bg-black/60 p-2" style="border-color:var(--glass-border)">
                         <span class="mono text-xs font-bold text-sky-400 shrink-0 select-none">USR://&gt;</span>
-                        <input type="text" id="story-terminal-input" class="bg-transparent border-none outline-none mono text-xs text-sky-300 w-full focus:ring-0 p-0" style="caret-color: #38bdf8;" placeholder="Type 'help' for instructions..." autofocus autocomplete="off">
+                        <input type="text" id="story-terminal-input" class="bg-transparent border-none outline-none mono text-xs text-sky-300 w-full focus:ring-0 p-0" style="caret-color: #38bdf8;" placeholder="Type 'help' for instructions..." autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore>
                     </div>
                     <!-- Command Shortcuts -->
                     <div class="flex flex-wrap gap-1.5 mt-1 select-none">
@@ -158,6 +158,7 @@ require_once __DIR__ . '/api.php';
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="docs">DOCS</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="gallery">GALLERY</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="hint">HINT</button>
+                        <button id="btn-cmd-mine" class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded hidden" style="border-color: #10b981 !important; color: #10b981 !important; background: rgba(16,185,129,0.03) !important;" data-cmd="mine">MINE</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded btn-red" data-cmd="clear">CLEAR</button>
                     </div>
                 </div>
@@ -185,7 +186,7 @@ require_once __DIR__ . '/api.php';
                             <span id="story-missions-toggle" style="color:var(--text-muted)">[-]</span>
                             <span id="story-missions-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
                         </div>
-                        <span id="side-missions-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
+                        <span id="side-missions-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/5</span>
                     </div>
                     <div id="story-side-missions-list" class="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto">
                         <!-- Side missions with status -->
