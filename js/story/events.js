@@ -212,9 +212,14 @@ export function handleCommand(cmdLine) {
             printLine('  gallery        - Show captured image data details.');
             printLine('  view <id>      - View an anomaly photo. (e.g., view IMG-1)');
             printLine('  unlock <code>  - Submit decryption key to open locked archives.');
+            printLine('  ip             - Show current client IP address.');
             printLine('  hint           - Show a hint for the current stage if you are stuck.');
             printLine('  clear          - Clear terminal screen buffer.');
             printLine('  reset          - Reset all story progress.');
+            break;
+
+        case 'ip':
+            printLine(`[+] CURRENT CLIENT IP: ${state.clientIp || 'UNKNOWN (SYNC REQUIRED)'}`, 'ok');
             break;
 
         case 'check':

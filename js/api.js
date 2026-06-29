@@ -76,10 +76,6 @@ export async function pollText() {
         state.lastSyncIp = data.last_ip || '';
         state.lastSyncClientId = data.last_client_id || '';
 
-        if (typeof state.onPollTextSuccess === 'function') {
-            state.onPollTextSuccess();
-        }
-
         const editor = document.getElementById('editor');
 
         if (data.empty) {
@@ -149,6 +145,10 @@ export async function pollText() {
 
         if (data.expires_in !== undefined) startTextExpiry(data.expires_in);
         setStatus('online', 'ONLINE');
+
+        if (typeof state.onPollTextSuccess === 'function') {
+            state.onPollTextSuccess();
+        }
 
     } catch (e) {
         setStatus('offline', 'OFFLINE');
@@ -235,10 +235,6 @@ export async function saveText(isRetry = false) {
         state.lastSyncIp = json.last_ip || '';
         state.lastSyncClientId = state.clientId;
 
-        if (typeof state.onPollTextSuccess === 'function') {
-            state.onPollTextSuccess();
-        }
-
         if (indicator) {
             indicator.textContent = '[SYNCED]';
             indicator.style.color = 'var(--success)';
@@ -246,6 +242,10 @@ export async function saveText(isRetry = false) {
         log('TEXT SYNCED', 'ok');
         if (json.expires_in !== undefined) startTextExpiry(json.expires_in);
         setStatus('online', 'ONLINE');
+
+        if (typeof state.onPollTextSuccess === 'function') {
+            state.onPollTextSuccess();
+        }
 
     } catch (e) {
         log(`SAVE ERR: ${e.message}`, 'err');

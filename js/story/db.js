@@ -89,17 +89,17 @@ export const SIDE_MISSIONS = {
     'SIDE-1': {
         id: 'SIDE-1',
         title: 'TIMELINE_SPLIT.sh',
-        desc: 'LOG RECORD: SURVEYOR TEAM ALPHA - SECTOR 0.\nWe noticed that the yellow lobby doesn\'t just loop; it duplicates. We could hear footsteps matching ours exactly, but coming from behind a solid wall. It was as if someone else was walking in a parallel space.\n\nINSTRUCTIONS: You must establish an echo connection. Open this terminal address on a separate device or private browser window (a parallel reality) and click "ENCRYPT & SYNC" to match the temporal signatures.'
+        desc: 'LOG RECORD: SURVEYOR TEAM ALPHA - SECTOR 0.\nWe noticed that the yellow lobby doesn\'t just loop; it duplicates. We could hear footsteps matching ours exactly, but coming from behind a solid wall. It was as if someone else was walking in a parallel space.\n\nINSTRUCTIONS: You must establish an echo connection. Open this terminal address on a separate device or private browser window (a parallel reality) and click "ENCRYPT & SYNC" to match the temporal signatures. (The terminal should auto-detect this sync. If it doesn\'t, run the "check" command in this terminal).'
     },
     'SIDE-2': {
         id: 'SIDE-2',
         title: 'SIGNAL_OVERRIDE.bin',
-        desc: 'LOG RECORD: RECOVERY UNIT - SECTOR 37.\nThe hum of the fluorescent lights (432 Hz) has a strange calming effect, but it is dangerous. It slowly wipes your memory, replacing thoughts with static. The team set up an override key to snap lost members back.\n\nINSTRUCTIONS: From the secondary parallel node (your second device or private window), you must force-inject the memory anchor command. Type and sync exactly the word "OVERRIDE" in the text editor to override the static.'
+        desc: 'LOG RECORD: RECOVERY UNIT - SECTOR 37.\nThe hum of the fluorescent lights (432 Hz) has a strange calming effect, but it is dangerous. It slowly wipes your memory, replacing thoughts with static. The team set up an override key to snap lost members back.\n\nINSTRUCTIONS: From the secondary parallel node (your second device or private window), you must force-inject the memory anchor command. Type and sync exactly the word "OVERRIDE" in the text editor to override the static. (The terminal should auto-detect this sync. If it doesn\'t, run the "check" command in this terminal).'
     },
     'SIDE-3': {
         id: 'SIDE-3',
         title: 'EXTERNAL_BEACON.net',
-        desc: 'LOG RECORD: ESCAPE VECTOR CALIBRATION.\nThe boundary of the Backrooms is extremely thick. A local node cannot pierce the drywall alone. We need a beacon anchored outside the local subnet to pull us through.\n\nINSTRUCTIONS: Establish a connection to this terminal from a completely separate physical network node (different IP address, e.g. using a phone on mobile data, or a remote operator). Sync any data from that node to calibrate the external beacon.'
+        desc: 'LOG RECORD: ESCAPE VECTOR CALIBRATION.\nThe boundary of the Backrooms is extremely thick. A local node cannot pierce the drywall alone. We need a beacon anchored outside the local subnet to pull us through.\n\nINSTRUCTIONS: Establish a connection to this terminal from a completely separate physical network node (different IP address, e.g. using a phone on mobile data, or a remote operator). Sync any data from that node to calibrate the external beacon. (The terminal should auto-detect this sync. If it doesn\'t, run the "check" command in this terminal).'
     },
     'SIDE-4': {
         id: 'SIDE-4',
