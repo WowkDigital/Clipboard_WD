@@ -487,13 +487,20 @@ export function startBypassMiner() {
         liveLine.update('[!] Decryption miner aborted by user.');
     };
 
+    // Generate a secure base seed once to avoid system call overhead inside the loop
+    const baseBytes = new Uint8Array(28);
+    crypto.getRandomValues(baseBytes);
+    const baseHex = Array.from(baseBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    let counter = 0;
+
     async function mineBatch() {
         if (isAborted) return;
         
         const batchSize = 350;
         for (let i = 0; i < batchSize; i++) {
-            const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-                .map(b => b.toString(16).padStart(2, '0')).join('');
+            // Fast key generation: baseHex + 8-char hex counter
+            const counterHex = (counter++).toString(16).padStart(8, '0');
+            const key = baseHex + counterHex;
             
             const derived = await hashRoomId(key);
             
@@ -502,7 +509,7 @@ export function startBypassMiner() {
                 state.abortMining = null;
                 liveLine.update(`[+] SUCCESS! Key found: ${key}`);
                 printLine(`[+] Decrypted hash signature: ${derived}`, 'ok');
-                printLine(`[+] Total hashes computed: ${(totalHashes + i + 1).toLocaleString()}`, 'ok');
+                printLine(`[+] Total hashes computed: ${counter.toLocaleString()}`, 'ok');
                 printLine(`[+] Applying hash collision... Reloading gateway...`, 'warn');
                 
                 setTimeout(() => {
