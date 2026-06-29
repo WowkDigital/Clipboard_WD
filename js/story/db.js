@@ -88,23 +88,23 @@ export const ANOMALIES = {
 export const SIDE_MISSIONS = {
     'SIDE-1': {
         id: 'SIDE-1',
-        title: 'REMOTE_HANDSHAKE.sh',
-        desc: 'Establish connection to this terminal from a different machine or private window, and sync any text content to establish a remote link.'
+        title: 'TIMELINE_SPLIT.sh',
+        desc: 'LOG RECORD: SURVEYOR TEAM ALPHA - SECTOR 0.\nWe noticed that the yellow lobby doesn\'t just loop; it duplicates. We could hear footsteps matching ours exactly, but coming from behind a solid wall. It was as if someone else was walking in a parallel space.\n\nINSTRUCTIONS: You must establish an echo connection. Open this terminal address on a separate device or private browser window (a parallel reality) and click "ENCRYPT & SYNC" to match the temporal signatures.'
     },
     'SIDE-2': {
         id: 'SIDE-2',
-        title: 'PAYLOAD_DECRYPTION.bin',
-        desc: 'Encrypt and sync a text payload containing exactly the keyphrase "OVERRIDE" from a different machine/browser window.'
+        title: 'SIGNAL_OVERRIDE.bin',
+        desc: 'LOG RECORD: RECOVERY UNIT - SECTOR 37.\nThe hum of the fluorescent lights (432 Hz) has a strange calming effect, but it is dangerous. It slowly wipes your memory, replacing thoughts with static. The team set up an override key to snap lost members back.\n\nINSTRUCTIONS: From the secondary parallel node (your second device or private window), you must force-inject the memory anchor command. Type and sync exactly the word "OVERRIDE" in the text editor to override the static.'
     },
     'SIDE-3': {
         id: 'SIDE-3',
-        title: 'GATEWAY_UPLINK.net',
-        desc: 'Establish a connection from a separate IP address (different network node). Confirm the link by scanning/checking the gateway.'
+        title: 'EXTERNAL_BEACON.net',
+        desc: 'LOG RECORD: ESCAPE VECTOR CALIBRATION.\nThe boundary of the Backrooms is extremely thick. A local node cannot pierce the drywall alone. We need a beacon anchored outside the local subnet to pull us through.\n\nINSTRUCTIONS: Establish a connection to this terminal from a completely separate physical network node (different IP address, e.g. using a phone on mobile data, or a remote operator). Sync any data from that node to calibrate the external beacon.'
     },
     'SIDE-4': {
         id: 'SIDE-4',
         title: 'NULL_VOID_SECTOR.bin',
-        desc: 'Re-initialize the gateway URL hash such that the Room ID (first 8 characters of the URL hash) starts with exactly "000". Run a check to extract the Null Void archive.'
+        desc: 'LOG RECORD: CRYPTOGRAPHIC ANOMALY.\nWe found a door marked with three white zeroes. Inside, the fluorescent lights were silent and the walls were pure black static. It was a Null Void—a spatial vacuum. Any data stored here is immune to temporal decay.\n\nINSTRUCTIONS: Manipulate the URL hash in your address bar so the Room ID (the first 8 characters following the "#" sign) starts with exactly "000" (e.g., "#000fd..."). Press Enter to reload, then check the terminal to sink the gate into the Null Void.'
     }
 };
 
