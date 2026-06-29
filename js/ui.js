@@ -166,20 +166,38 @@ export function renderFiles(files) {
         list.appendChild(item);
 
         let deleteClickedOnce = false;
-        let deleteTimeout = null;
+        let outsideClickListener = null;
 
-        const confirmDelete = async (fileName) => {
+        const resetDeleteButton = () => {
+            deleteClickedOnce = false;
+            delBtn.textContent = 'DELETE';
+            delBtn.style.backgroundColor = '';
+            if (outsideClickListener) {
+                document.removeEventListener('click', outsideClickListener);
+                outsideClickListener = null;
+            }
+        };
+
+        const confirmDelete = async (fileName, e) => {
+            if (e) e.stopPropagation();
+
             if (!deleteClickedOnce) {
                 deleteClickedOnce = true;
                 delBtn.textContent = 'CONFIRM';
                 delBtn.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
-                deleteTimeout = setTimeout(() => {
-                    deleteClickedOnce = false;
-                    delBtn.textContent = 'DELETE';
-                    delBtn.style.backgroundColor = '';
-                }, 4000);
+
+                outsideClickListener = (event) => {
+                    if (event.target !== delBtn) {
+                        resetDeleteButton();
+                    }
+                };
+                document.addEventListener('click', outsideClickListener);
             } else {
-                clearTimeout(deleteTimeout);
+                if (outsideClickListener) {
+                    document.removeEventListener('click', outsideClickListener);
+                    outsideClickListener = null;
+                }
+                deleteClickedOnce = false;
                 delBtn.disabled = true;
                 delBtn.textContent = 'DELETING...';
                 delBtn.style.backgroundColor = '';
@@ -194,11 +212,11 @@ export function renderFiles(files) {
                 nameEl.textContent = meta.name;
                 sizeEl.textContent = fmtSize(meta.size);
                 dlBtn.onclick = () => downloadFile(f.file_id, f.encrypted_meta, f.iv_meta, meta.name);
-                delBtn.onclick = () => confirmDelete(meta.name);
+                delBtn.onclick = (e) => confirmDelete(meta.name, e);
             })
             .catch(() => {
                 nameEl.textContent = '[encrypted]';
-                delBtn.onclick = () => confirmDelete('[encrypted]');
+                delBtn.onclick = (e) => confirmDelete('[encrypted]', e);
             });
     });
 }
@@ -268,7 +286,7 @@ document.querySelectorAll('[data-tab]').forEach(btn => {
         btn.style.color = 'var(--accent-primary)';
         btn.style.borderBottom = '2px solid var(--accent-primary)';
 
-        ['text', 'files'].forEach(t => {
+        ['text', 'files', 'story'].forEach(t => {
             const el = document.getElementById('tab-' + t);
             if (el) el.classList.toggle('hidden', t !== btn.dataset.tab);
         });
@@ -280,5 +298,9 @@ document.querySelectorAll('[data-tab]').forEach(btn => {
         }
 
         if (btn.dataset.tab === 'files') loadFiles();
+        if (btn.dataset.tab === 'story') {
+            const termInput = document.getElementById('story-terminal-input');
+            if (termInput) termInput.focus();
+        }
     });
 });

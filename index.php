@@ -83,6 +83,7 @@ require_once __DIR__ . '/api.php';
                 <div class="flex gap-0">
                     <button class="tab-active btn-tab" data-tab="text">TEXT</button>
                     <button class="btn-tab" data-tab="files">FILES</button>
+                    <button class="btn-tab" data-tab="story">STORY MODE</button>
                 </div>
                 <div id="text-actions" class="flex gap-2">
                     <button class="btn" id="btn-save" style="padding: 3px 10px !important; font-size: 10px !important; min-height: 1.8rem !important;">ENCRYPT &amp; SYNC</button>
@@ -130,6 +131,54 @@ require_once __DIR__ . '/api.php';
 
             </div>
 
+            <!-- Tab content: STORY MODE -->
+            <div id="tab-story" class="flex flex-col gap-4 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Left: Interactive Terminal -->
+                    <div class="md:col-span-2 flex flex-col gap-2">
+                        <div class="mono text-[10px] flex items-center justify-between pb-1 border-b" style="border-color:var(--glass-border)">
+                            <span class="flex items-center gap-1.5">
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
+                                <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">GATEWAY://TERMINAL_V1.0</span>
+                            </span>
+                            <span style="color:var(--text-muted)">[SESSION: ENCRYPTED]</span>
+                        </div>
+                        <div id="story-terminal-output" class="p-4 border rounded overflow-y-auto" style="height: 320px; border-color:var(--glass-border);">
+                            <!-- Simulation text will be populated dynamically -->
+                        </div>
+                        <div class="flex items-center gap-2 border rounded bg-black/60 p-2" style="border-color:var(--glass-border)">
+                            <span class="mono text-xs font-bold text-sky-400 shrink-0 select-none">USR://&gt;</span>
+                            <input type="text" id="story-terminal-input" class="bg-transparent border-none outline-none mono text-xs text-sky-300 w-full focus:ring-0 p-0" style="caret-color: #38bdf8;" placeholder="Type 'help' for instructions..." autofocus autocomplete="off">
+                        </div>
+                    </div>
+
+                    <!-- Right: Decrypted Info & Gallery -->
+                    <div class="flex flex-col gap-4">
+                        <!-- Decrypted Documents list -->
+                        <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
+                            <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                                <span>[DECRYPTED_LOGS]</span>
+                                <span id="docs-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/5</span>
+                            </div>
+                            <div id="story-docs-list" class="flex flex-col gap-1.5 max-h-[130px] overflow-y-auto">
+                                <!-- Decrypted items with lock/unlock states -->
+                            </div>
+                        </div>
+
+                        <!-- Gallery list -->
+                        <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
+                            <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                                <span>[CAPTURED_ANOMALIES]</span>
+                                <span id="gallery-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
+                            </div>
+                            <div id="story-gallery-grid" class="grid grid-cols-2 gap-2 max-h-[145px] overflow-y-auto">
+                                <!-- Discovered photos thumbnail grid -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- System Log Container -->
@@ -159,6 +208,26 @@ require_once __DIR__ . '/api.php';
             <div class="flex justify-end gap-3 mt-2">
                 <button id="btn-confirm-cancel" class="btn">CANCEL</button>
                 <button id="btn-confirm-ok" class="btn btn-red">PROCEED</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retro Anomaly Image Viewer Modal -->
+    <div id="story-image-modal" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/90 backdrop-blur-sm hidden">
+        <div class="glass-panel p-6 max-w-lg w-full mx-4 flex flex-col gap-4">
+            <div class="mono text-xs flex items-center justify-between pb-2 border-b" style="border-color:var(--glass-border)">
+                <span class="flex items-center gap-1.5">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-sky-400 pulse"></span>
+                    <span id="story-modal-title" style="color:#38bdf8; font-weight:600; letter-spacing:0.05em;">ANOMALY_RECORD</span>
+                </span>
+                <span style="color:var(--text-muted)">[CLASSIFIED]</span>
+            </div>
+            <div class="border overflow-hidden bg-black/60 flex items-center justify-center rounded" style="border-color:var(--glass-border)">
+                <img id="story-modal-img" src="" alt="Anomaly visual" class="max-h-[350px] w-auto object-contain">
+            </div>
+            <p id="story-modal-desc" class="mono text-xs leading-relaxed" style="color:var(--text-secondary)"></p>
+            <div class="flex justify-end mt-2">
+                <button id="btn-story-modal-close" class="btn">CLOSE RECORD</button>
             </div>
         </div>
     </div>
