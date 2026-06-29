@@ -115,7 +115,7 @@ require_once __DIR__ . '/api.php';
                     <div class="mono text-sm" style="color:var(--text-dim)">DROP FILE HERE</div>
                     <div class="mono text-xs" style="color:var(--text-muted)">or click to browse · max 20 MB</div>
                     <div class="mono text-xs" style="color:var(--text-muted)">encrypted client-side · multi-download · 30 min TTL</div>
-                    <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer" multiple>
                 </div>
 
                 <div id="progress-wrap" class="hidden">

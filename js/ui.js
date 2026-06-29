@@ -207,14 +207,24 @@ const fileInput = document.getElementById('file-input');
 if (dropZone && fileInput) {
     dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-    dropZone.addEventListener('drop', (e) => {
+    dropZone.addEventListener('drop', async (e) => {
         e.preventDefault();
         dropZone.classList.remove('drag-over');
         const files = e.dataTransfer.files;
-        if (files.length) uploadFile(files[0]);
+        if (files.length) {
+            for (const file of files) {
+                await uploadFile(file);
+            }
+        }
     });
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files.length) { uploadFile(fileInput.files[0]); fileInput.value = ''; }
+    fileInput.addEventListener('change', async () => {
+        if (fileInput.files.length) {
+            const files = Array.from(fileInput.files);
+            fileInput.value = '';
+            for (const file of files) {
+                await uploadFile(file);
+            }
+        }
     });
 }
 

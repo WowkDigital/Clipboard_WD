@@ -201,6 +201,9 @@ function action_upload_file(): void {
         json_error(400, "post_max_size_exceeded (limit: $max_post)");
     }
 
+    $db = db();
+    $now = time();
+
     $room_hash      = validate_hash($_POST['room_hash'] ?? '');
     $encrypted_meta = $_POST['encrypted_meta'] ?? '';
     $iv_meta        = $_POST['iv_meta'] ?? '';
