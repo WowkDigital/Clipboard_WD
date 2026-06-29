@@ -438,8 +438,32 @@ function handleCommand(cmdLine) {
             printLine('  gallery        - Show captured image data details.');
             printLine('  view <id>      - View an anomaly photo. (e.g., view IMG-1)');
             printLine('  unlock <code>  - Submit decryption key to open locked archives.');
+            printLine('  hint           - Show a hint for the current stage if you are stuck.');
             printLine('  clear          - Clear terminal screen buffer.');
             printLine('  reset          - Reset all story progress.');
+            break;
+
+        case 'hint':
+            printLine('--- HINT MODULE ACTIVE ---', 'sys');
+            if (gameState.stage === 0) {
+                printLine('Task: First steps');
+                printLine('HINT: Read document DOC-1 carefully using the command "read DOC-1". You will find the year the expedition departed. Use this year as the unlock code: unlock <year>');
+            } else if (gameState.stage === 1) {
+                printLine('Task: Calibrating frequencies');
+                printLine('HINT: You have decrypted document DOC-2. Read it ("read DOC-2") to learn the registered frequency (432 Hz). Then, type "scan" so the receiver automatically tunes to this value.');
+            } else if (gameState.stage === 2) {
+                printLine('Task: Gate verification');
+                printLine('HINT: You have accessed log DOC-3 ("read DOC-3"). Surveyor Team Alpha requests you to enter the latitude (LAT) coordinates of the gate. Use the command: unlock 37188');
+            } else if (gameState.stage === 3) {
+                printLine('Task: Noclip exit protocol');
+                printLine('HINT: In document DOC-4 ("read DOC-4") the exit procedure is detailed. Go to the first tab (TEXT), type "NOCLIP" in the editor, change the TTL on the HUD bar to 15m (15 minutes), and click "ENCRYPT & SYNC". Then return to the terminal and type "scan".');
+            } else if (gameState.stage === 4) {
+                printLine('Task: Gate exit launch');
+                printLine('HINT: Make sure you have the exact word "NOCLIP" in the TEXT tab, and the TTL on the HUD is set to 15m (and synced). Type the command "scan" in this terminal to complete the noclip escape.');
+            } else if (gameState.stage === 5) {
+                printLine('Game Completed!');
+                printLine('HINT: The archive has been fully decrypted and the team is safe. Use "reset" to play again.');
+            }
             break;
 
         case 'status':
