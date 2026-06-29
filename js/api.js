@@ -71,6 +71,11 @@ export async function pollText() {
         if (lm) state.lastModified = lm;
 
         const data = await res.json();
+        
+        state.clientIp = data.client_ip || '';
+        state.lastSyncIp = data.last_ip || '';
+        state.lastSyncClientId = data.last_client_id || '';
+
         const editor = document.getElementById('editor');
 
         if (data.empty) {
@@ -186,7 +191,8 @@ export async function saveText(isRetry = false) {
             encrypted_data: data,
             iv: iv,
             last_updated: state.lastSyncedTime || 0,
-            ttl: ttl
+            ttl: ttl,
+            client_id: state.clientId
         };
 
         const res = await fetch('api.php?action=save_text', {
@@ -221,6 +227,9 @@ export async function saveText(isRetry = false) {
         state.lastModified = '';
         state.lastSyncedText = plaintext;
         state.lastSyncedTime = json.updated_at;
+        state.clientIp = json.client_ip || '';
+        state.lastSyncIp = json.last_ip || '';
+        state.lastSyncClientId = state.clientId;
 
         if (indicator) {
             indicator.textContent = '[SYNCED]';

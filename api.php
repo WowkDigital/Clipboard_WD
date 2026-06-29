@@ -85,15 +85,18 @@ function db_migrate(SQLite3 $db): void {
 
     // Add column if it doesn't exist for existing databases
     $result = $db->query("PRAGMA table_info(rooms)");
-    $has_ttl = false;
+    $cols = [];
     while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        if ($row['name'] === 'ttl') {
-            $has_ttl = true;
-            break;
-        }
+        $cols[] = $row['name'];
     }
-    if (!$has_ttl) {
+    if (!in_array('ttl', $cols)) {
         $db->exec('ALTER TABLE rooms ADD COLUMN ttl INTEGER DEFAULT 3600');
+    }
+    if (!in_array('last_ip', $cols)) {
+        $db->exec('ALTER TABLE rooms ADD COLUMN last_ip TEXT');
+    }
+    if (!in_array('last_client_id', $cols)) {
+        $db->exec('ALTER TABLE rooms ADD COLUMN last_client_id TEXT');
     }
 }
 
@@ -106,6 +109,8 @@ function action_save_text(): void {
     $iv             = $body['iv'] ?? '';
     $last_updated   = isset($body['last_updated']) ? (int)$body['last_updated'] : 0;
     $ttl            = isset($body['ttl']) ? min(172800, max(60, (int)$body['ttl'])) : 3600;
+    $last_ip        = $_SERVER['REMOTE_ADDR'] ?? '';
+    $last_client_id = $body['client_id'] ?? '';
 
     if (!$encrypted_data || !$iv) {
         json_error(400, 'missing_fields');
@@ -128,23 +133,33 @@ function action_save_text(): void {
     }
 
     $stmt = $db->prepare('
-        INSERT INTO rooms (room_hash, encrypted_data, iv, updated_at, ttl)
-        VALUES (:rh, :ed, :iv, :ua, :ttl)
+        INSERT INTO rooms (room_hash, encrypted_data, iv, updated_at, ttl, last_ip, last_client_id)
+        VALUES (:rh, :ed, :iv, :ua, :ttl, :ip, :cid)
         ON CONFLICT(room_hash) DO UPDATE SET
             encrypted_data = excluded.encrypted_data,
             iv             = excluded.iv,
             updated_at     = excluded.updated_at,
-            ttl            = excluded.ttl
+            ttl            = excluded.ttl,
+            last_ip        = excluded.last_ip,
+            last_client_id = excluded.last_client_id
     ');
     $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
     $stmt->bindValue(':ed', $encrypted_data, SQLITE3_TEXT);
     $stmt->bindValue(':iv', $iv, SQLITE3_TEXT);
     $stmt->bindValue(':ua', $now, SQLITE3_INTEGER);
     $stmt->bindValue(':ttl', $ttl, SQLITE3_INTEGER);
+    $stmt->bindValue(':ip', $last_ip, SQLITE3_TEXT);
+    $stmt->bindValue(':cid', $last_client_id, SQLITE3_TEXT);
     $stmt->execute();
     $db->exec('COMMIT');
 
-    json_ok(['saved' => true, 'updated_at' => $now, 'expires_in' => $ttl]);
+    json_ok([
+        'saved' => true,
+        'updated_at' => $now,
+        'expires_in' => $ttl,
+        'last_ip' => $last_ip,
+        'client_ip' => $_SERVER['REMOTE_ADDR'] ?? ''
+    ]);
 }
 
 function action_get_text(): void {
@@ -152,7 +167,7 @@ function action_get_text(): void {
     $db = db();
     $now = time();
 
-    $stmt = $db->prepare('SELECT encrypted_data, iv, updated_at, ttl FROM rooms WHERE room_hash = :rh');
+    $stmt = $db->prepare('SELECT encrypted_data, iv, updated_at, ttl, last_ip, last_client_id FROM rooms WHERE room_hash = :rh');
     $stmt->bindValue(':rh', $room_hash, SQLITE3_TEXT);
     $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
 
@@ -189,6 +204,9 @@ function action_get_text(): void {
         'updated_at'     => $row['updated_at'],
         'expires_in'     => $ttl - ($now - $row['updated_at']),
         'ttl'            => $ttl,
+        'last_ip'        => $row['last_ip'] ?? '',
+        'last_client_id' => $row['last_client_id'] ?? '',
+        'client_ip'      => $_SERVER['REMOTE_ADDR'] ?? ''
     ]);
 }
 

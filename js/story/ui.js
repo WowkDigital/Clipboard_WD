@@ -1,6 +1,6 @@
 'use strict';
 
-import { DOCUMENTS, ANOMALIES } from './db.js';
+import { DOCUMENTS, ANOMALIES, SIDE_MISSIONS } from './db.js';
 import { gameState } from './state.js';
 import { printLine } from './terminal.js';
 
@@ -8,6 +8,7 @@ import { printLine } from './terminal.js';
 export function updateStoryUI() {
     renderDocuments();
     renderGallery();
+    renderSideMissions();
     
     // Update counters
     const docsCount = document.getElementById('docs-count');
@@ -19,7 +20,54 @@ export function updateStoryUI() {
     if (galleryCount) {
         galleryCount.textContent = `${gameState.unlockedAnomalies.length}/${Object.keys(ANOMALIES).length}`;
     }
+
+    const sideCount = document.getElementById('side-missions-count');
+    if (sideCount) {
+        sideCount.textContent = `${gameState.completedSideMissions.length}/${Object.keys(SIDE_MISSIONS).length}`;
+    }
 }
+
+export function renderSideMissions() {
+    const list = document.getElementById('story-side-missions-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    Object.keys(SIDE_MISSIONS).forEach(id => {
+        const mission = SIDE_MISSIONS[id];
+        const isCompleted = gameState.completedSideMissions.includes(id);
+
+        const el = document.createElement('div');
+        el.className = `doc-item ${isCompleted ? '' : 'active'}`;
+
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = mission.title;
+
+        const statusSpan = document.createElement('span');
+        statusSpan.className = 'text-[9px] px-1 rounded border';
+        if (isCompleted) {
+            statusSpan.textContent = 'COMPLETED';
+            statusSpan.style.borderColor = '#10b981';
+            statusSpan.style.color = '#10b981';
+        } else {
+            statusSpan.textContent = 'ACTIVE';
+            statusSpan.style.borderColor = '#eab308';
+            statusSpan.style.color = '#eab308';
+        }
+
+        el.appendChild(titleSpan);
+        el.appendChild(statusSpan);
+
+        el.onclick = () => {
+            printLine(`\n--- MISSION DETAILS: ${mission.title} ---`, 'sys');
+            printLine(mission.desc, '');
+            printLine(`Status: ${isCompleted ? 'COMPLETED' : 'ACTIVE'}`, isCompleted ? 'ok' : 'warn');
+            printLine('----------------------------------------\n', 'sys');
+        };
+
+        list.appendChild(el);
+    });
+}
+
 
 export function renderDocuments() {
     const list = document.getElementById('story-docs-list');

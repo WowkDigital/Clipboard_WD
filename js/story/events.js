@@ -1,9 +1,52 @@
 'use strict';
 
-import { DOCUMENTS, ANOMALIES } from './db.js';
+import { DOCUMENTS, ANOMALIES, SIDE_MISSIONS } from './db.js';
 import { gameState, saveProgress, resetProgress } from './state.js';
 import { printLine, clearTerminal } from './terminal.js';
 import { updateStoryUI, readDocumentInTerminal, openImageModal } from './ui.js';
+import { state } from '../state.js';
+
+// ── Side Missions Check System ───────────────────────────────
+export function checkSideMissions() {
+    let completedAny = false;
+    const editor = document.getElementById('editor');
+    const editorVal = editor ? editor.value.trim() : '';
+
+    // SIDE-1: Remote Handshake
+    if (!gameState.completedSideMissions.includes('SIDE-1')) {
+        if (state.lastSyncClientId && state.lastSyncClientId !== state.clientId) {
+            gameState.completedSideMissions.push('SIDE-1');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: REMOTE_HANDSHAKE.sh', 'ok');
+            printLine('Connection from external node detected. Handshake established.', 'ok');
+            completedAny = true;
+        }
+    }
+
+    // SIDE-2: Payload Decryption
+    if (!gameState.completedSideMissions.includes('SIDE-2')) {
+        if (state.lastSyncClientId && state.lastSyncClientId !== state.clientId && editorVal === 'OVERRIDE') {
+            gameState.completedSideMissions.push('SIDE-2');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: PAYLOAD_DECRYPTION.bin', 'ok');
+            printLine('Decrypted remote override payload successfully.', 'ok');
+            completedAny = true;
+        }
+    }
+
+    // SIDE-3: Gateway Uplink
+    if (!gameState.completedSideMissions.includes('SIDE-3')) {
+        if (state.lastSyncIp && state.clientIp && state.lastSyncIp !== state.clientIp) {
+            gameState.completedSideMissions.push('SIDE-3');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: GATEWAY_UPLINK.net', 'ok');
+            printLine('Uplink confirmed from external network node. Client IP differs.', 'ok');
+            completedAny = true;
+        }
+    }
+
+    if (completedAny) {
+        saveProgress();
+        updateStoryUI();
+    }
+}
 
 // ── Game Event System ────────────────────────────────────────
 export function executeScan() {
@@ -152,6 +195,7 @@ export function handleCommand(cmdLine) {
             printLine('  help           - Display this command matrix.');
             printLine('  status         - Retrieve terminal connection details.');
             printLine('  scan           - Calibrate frequency receiver to scan for local anomalies.');
+            printLine('  check          - Verify independent sub-channel bypass missions.');
             printLine('  docs           - Show list of discovered documents.');
             printLine('  read <id>      - Read a document. (e.g., read DOC-1)');
             printLine('  gallery        - Show captured image data details.');
@@ -160,6 +204,15 @@ export function handleCommand(cmdLine) {
             printLine('  hint           - Show a hint for the current stage if you are stuck.');
             printLine('  clear          - Clear terminal screen buffer.');
             printLine('  reset          - Reset all story progress.');
+            break;
+
+        case 'check':
+            printLine('Checking sub-channel bypass networks...', 'sys');
+            checkSideMissions();
+            Object.keys(SIDE_MISSIONS).forEach(id => {
+                const isDone = gameState.completedSideMissions.includes(id);
+                printLine(`  [${id}] ${SIDE_MISSIONS[id].title}: ${isDone ? 'COMPLETED' : 'ACTIVE'}`, isDone ? 'ok' : 'warn');
+            });
             break;
 
         case 'hint':
@@ -186,6 +239,7 @@ export function handleCommand(cmdLine) {
             break;
 
         case 'status':
+            checkSideMissions();
             printLine('LIMIT GATEWAY CORE V1.0');
             printLine(`SIGNAL STRENGTH: ${gameState.stage >= 4 ? '95%' : gameState.stage >= 2 ? '70%' : '37%'}`, 'warn');
             
@@ -196,6 +250,7 @@ export function handleCommand(cmdLine) {
             printLine(`CURRENT SECTOR: ${sector}`, 'warn');
             printLine(`DECRYPTED DOCUMENTS: ${gameState.unlockedDocs.length} / 5`, 'warn');
             printLine(`DISCOVERED ANOMALIES: ${gameState.unlockedAnomalies.length} / 4`, 'warn');
+            printLine(`COMPLETED BYPASSES: ${gameState.completedSideMissions.length} / ${Object.keys(SIDE_MISSIONS).length}`, 'warn');
             
             let archiveStatus = 'PARTIALLY ENCRYPTED';
             if (gameState.stage === 5) archiveStatus = 'FULLY DECRYPTED - GATES OPEN';
@@ -203,6 +258,7 @@ export function handleCommand(cmdLine) {
             break;
 
         case 'scan':
+            checkSideMissions();
             // Check if user is in Stage 1 and needs to calibrate to 432 Hz
             if (gameState.stage === 1) {
                 printLine('[+] Scanning frequency band...', 'warn');

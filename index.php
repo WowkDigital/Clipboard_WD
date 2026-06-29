@@ -154,6 +154,7 @@ require_once __DIR__ . '/api.php';
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="help">HELP</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="status">STATUS</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="scan">SCAN</button>
+                        <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="check">CHECK</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="docs">DOCS</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="gallery">GALLERY</button>
                         <button class="btn-cmd-shortcut mono text-[10px] uppercase px-2 py-0.5 border rounded" data-cmd="hint">HINT</button>
@@ -171,6 +172,18 @@ require_once __DIR__ . '/api.php';
                         <!-- Decrypted items with lock/unlock states -->
                     </div>
                 </div>
+
+                <!-- Side Missions list -->
+                <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
+                    <div class="mono text-xs font-bold border-b pb-1 flex justify-between items-center" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <span>[INDEPENDENT_MISSIONS]</span>
+                        <span id="side-missions-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/3</span>
+                    </div>
+                    <div id="story-side-missions-list" class="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto">
+                        <!-- Side missions with status -->
+                    </div>
+                </div>
+
 
                 <!-- Gallery list -->
                 <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">

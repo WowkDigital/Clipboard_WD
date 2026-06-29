@@ -84,3 +84,22 @@ export const ANOMALIES = {
         desc: 'The gateway exit. Blinding white light offering a path back to reality.'
     }
 };
+
+export const SIDE_MISSIONS = {
+    'SIDE-1': {
+        id: 'SIDE-1',
+        title: 'REMOTE_HANDSHAKE.sh',
+        desc: 'Establish connection to this terminal from a different machine or private window, and sync any text content to establish a remote link.'
+    },
+    'SIDE-2': {
+        id: 'SIDE-2',
+        title: 'PAYLOAD_DECRYPTION.bin',
+        desc: 'Encrypt and sync a text payload containing exactly the keyphrase "OVERRIDE" from a different machine/browser window.'
+    },
+    'SIDE-3': {
+        id: 'SIDE-3',
+        title: 'GATEWAY_UPLINK.net',
+        desc: 'Establish a connection from a separate IP address (different network node). Confirm the link by scanning/checking the gateway.'
+    }
+};
+

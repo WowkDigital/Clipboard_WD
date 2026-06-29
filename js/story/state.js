@@ -3,7 +3,8 @@
 export const gameState = {
     stage: 0, // 0: Start, 1: Unlocked DOC-2, 2: Scanned 432Hz -> DOC-3/IMG-2, 3: Coordinates Unlocked -> DOC-4/IMG-3, 4: NOCLIP Synced -> DOC-5/IMG-4
     unlockedDocs: ['DOC-1'],
-    unlockedAnomalies: []
+    unlockedAnomalies: [],
+    completedSideMissions: []
 };
 
 // Load progress from localStorage
@@ -15,6 +16,7 @@ export function loadProgress() {
             gameState.stage = data.stage ?? 0;
             gameState.unlockedDocs = data.unlockedDocs ?? ['DOC-1'];
             gameState.unlockedAnomalies = data.unlockedAnomalies ?? [];
+            gameState.completedSideMissions = data.completedSideMissions ?? [];
         } catch (e) {
             console.error('Failed to parse story progress:', e);
         }
@@ -31,5 +33,7 @@ export function resetProgress() {
     gameState.stage = 0;
     gameState.unlockedDocs = ['DOC-1'];
     gameState.unlockedAnomalies = [];
+    gameState.completedSideMissions = [];
     saveProgress();
 }
+
