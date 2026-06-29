@@ -114,19 +114,19 @@ export function renderFiles(files) {
 
     files.forEach(f => {
         const item = document.createElement('div');
-        item.className = 'file-item p-3 flex justify-between items-center gap-4';
+        item.className = 'file-item p-3 flex justify-between items-center gap-3 sm:gap-4';
         item.dataset.fileId = f.file_id;
 
         const infoCol = document.createElement('div');
         infoCol.className = 'flex flex-col gap-1 min-w-0 flex-1';
 
         const nameEl = document.createElement('span');
-        nameEl.className = 'mono text-sm truncate font-medium';
+        nameEl.className = 'mono text-xs sm:text-sm truncate font-medium';
         nameEl.style.color = 'var(--text-main)';
         nameEl.textContent = '…';
 
         const metaRow = document.createElement('div');
-        metaRow.className = 'flex items-center gap-3 text-xs';
+        metaRow.className = 'flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs';
         metaRow.style.color = 'var(--text-secondary)';
 
         const sizeEl = document.createElement('span');
@@ -142,20 +142,20 @@ export function renderFiles(files) {
         infoCol.appendChild(metaRow);
 
         const actionsCol = document.createElement('div');
-        actionsCol.className = 'flex items-center gap-2 shrink-0';
+        actionsCol.className = 'flex items-center gap-1.5 sm:gap-2 shrink-0';
 
         const dlBtn = document.createElement('button');
         dlBtn.className = 'btn';
         dlBtn.textContent = 'DOWNLOAD';
-        dlBtn.style.padding = '3px 10px';
-        dlBtn.style.fontSize = '10px';
+        dlBtn.style.padding = '3px 8px';
+        dlBtn.style.fontSize = '9px';
         dlBtn.style.minHeight = '1.8rem';
 
         const delBtn = document.createElement('button');
         delBtn.className = 'btn btn-red';
         delBtn.textContent = 'DELETE';
-        delBtn.style.padding = '3px 10px';
-        delBtn.style.fontSize = '10px';
+        delBtn.style.padding = '3px 8px';
+        delBtn.style.fontSize = '9px';
         delBtn.style.minHeight = '1.8rem';
 
         actionsCol.appendChild(dlBtn);
@@ -172,16 +172,17 @@ export function renderFiles(files) {
             if (!deleteClickedOnce) {
                 deleteClickedOnce = true;
                 delBtn.textContent = 'CONFIRM';
-                delBtn.classList.add('pulse');
+                delBtn.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
                 deleteTimeout = setTimeout(() => {
                     deleteClickedOnce = false;
                     delBtn.textContent = 'DELETE';
-                    delBtn.classList.remove('pulse');
+                    delBtn.style.backgroundColor = '';
                 }, 4000);
             } else {
                 clearTimeout(deleteTimeout);
                 delBtn.disabled = true;
                 delBtn.textContent = 'DELETING...';
+                delBtn.style.backgroundColor = '';
                 await deleteFile(f.file_id, fileName);
             }
         };
@@ -203,7 +204,7 @@ export function renderFiles(files) {
 }
 
 export function startFileCountdown(el, seconds) {
-    const id = setInterval(() => {
+    function update() {
         if (seconds <= 0) {
             clearInterval(id);
             el.textContent = 'EXPIRED';
@@ -213,9 +214,11 @@ export function startFileCountdown(el, seconds) {
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
         el.textContent = `[TTL] ${m}:${s}`;
-        el.style.color = seconds < 60 ? 'var(--red)' : seconds < 180 ? 'var(--amber)' : 'var(--text-muted)';
+        el.style.color = seconds < 60 ? 'var(--red)' : seconds < 180 ? 'var(--amber)' : 'var(--text-secondary)';
         seconds--;
-    }, 1000);
+    }
+    update();
+    const id = setInterval(update, 1000);
     state.countdowns[Math.random()] = id;
 }
 
