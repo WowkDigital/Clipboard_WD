@@ -16,8 +16,8 @@ export function checkSideMissions() {
     if (!gameState.completedSideMissions.includes('SIDE-1')) {
         if (state.lastSyncClientId && state.lastSyncClientId !== state.clientId) {
             gameState.completedSideMissions.push('SIDE-1');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: REMOTE_HANDSHAKE.sh', 'ok');
-            printLine('Connection from external node detected. Handshake established.', 'ok');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: TIMELINE_SPLIT.sh', 'ok');
+            printLine('Connection from parallel client node detected. Handshake established.', 'ok');
             completedAny = true;
         }
     }
@@ -26,7 +26,7 @@ export function checkSideMissions() {
     if (!gameState.completedSideMissions.includes('SIDE-2')) {
         if (state.lastSyncClientId && state.lastSyncClientId !== state.clientId && editorVal === 'OVERRIDE') {
             gameState.completedSideMissions.push('SIDE-2');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: PAYLOAD_DECRYPTION.bin', 'ok');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: SIGNAL_OVERRIDE.bin', 'ok');
             printLine('Decrypted remote override payload successfully.', 'ok');
             completedAny = true;
         }
@@ -36,7 +36,7 @@ export function checkSideMissions() {
     if (!gameState.completedSideMissions.includes('SIDE-3')) {
         if (state.lastSyncIp && state.clientIp && state.lastSyncIp !== state.clientIp) {
             gameState.completedSideMissions.push('SIDE-3');
-            printLine('[+] INDEPENDENT MISSION COMPLETED: GATEWAY_UPLINK.net', 'ok');
+            printLine('[+] INDEPENDENT MISSION COMPLETED: EXTERNAL_BEACON.net', 'ok');
             printLine('Uplink confirmed from external network node. Client IP differs.', 'ok');
             completedAny = true;
         }

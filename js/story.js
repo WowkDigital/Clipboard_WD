@@ -2,14 +2,19 @@
 
 import { loadProgress } from './story/state.js';
 import { updateStoryUI, initCollapsible } from './story/ui.js';
-import { handleCommand } from './story/events.js';
+import { handleCommand, checkSideMissions } from './story/events.js';
 import { printLine, clearTerminal } from './story/terminal.js';
+import { state } from './state.js';
 
 // ── Initialization ───────────────────────────────────────────
 export function initStory() {
     loadProgress();
     initCollapsible();
     updateStoryUI();
+
+    state.onPollTextSuccess = () => {
+        checkSideMissions();
+    };
 
     // Hook up terminal input listener
     const input = document.getElementById('story-terminal-input');

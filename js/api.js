@@ -76,6 +76,10 @@ export async function pollText() {
         state.lastSyncIp = data.last_ip || '';
         state.lastSyncClientId = data.last_client_id || '';
 
+        if (typeof state.onPollTextSuccess === 'function') {
+            state.onPollTextSuccess();
+        }
+
         const editor = document.getElementById('editor');
 
         if (data.empty) {
@@ -230,6 +234,10 @@ export async function saveText(isRetry = false) {
         state.clientIp = json.client_ip || '';
         state.lastSyncIp = json.last_ip || '';
         state.lastSyncClientId = state.clientId;
+
+        if (typeof state.onPollTextSuccess === 'function') {
+            state.onPollTextSuccess();
+        }
 
         if (indicator) {
             indicator.textContent = '[SYNCED]';

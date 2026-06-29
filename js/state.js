@@ -15,6 +15,7 @@ export const state = {
     clientIp: '',
     lastSyncIp: '',
     lastSyncClientId: '',
+    onPollTextSuccess: null,
 };
 
 function getOrCreateClientId() {
