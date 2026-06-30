@@ -89,3 +89,46 @@ Detailed mission ideas and variations exploiting the offline queue mechanic:
   3. A second device/window also goes offline and writes the same.
   4. Both devices reconnect to the internet within 10 seconds of each other.
   5. The server matches the timestamps of the offline modification times, verifying the parallel silent handshake.
+
+---
+
+## 8. Scanner Heat Cycle Calibration (Thermal Equilibrium Mechanic)
+* **Theme**: The gateway scanner requires high energy to penetrate the thick lead-shielded walls of Level 2 (Pipe Dreams). However, scanning too fast triggers an automatic hardware thermal lockout. You must balance scan sequences to maintain a critical operational temperature.
+* **App Mechanic**: Scanner temperature progression and Newton's law of cooling.
+* **Task Description**:
+  1. Initiate multiple scans in sequence. Each scan generates heat (raising the temperature from 20°C).
+  2. You must execute and maintain the scanner temperature in the "Superheated Zone" (between 100°C and 120°C) for at least 15 seconds without letting it reach the 125°C automatic lockout limit.
+  3. Achieving this critical heat state stabilizes the frequency generator, allowing a deep scan to discover the Pipe Dreams coordinate signature.
+
+---
+
+## 9. Decaying Packet Recovery (TTL Multi-File Cascade)
+* **Theme**: The exit codes for Sector 11 (Concrete Desert) are scattered across multiple file packets that decay at different rates. To decrypt the coordinate, all packets must exist in the storage grid simultaneously.
+* **App Mechanic**: Multiple file uploads with independent, short-lived TTL timers.
+* **Task Description**:
+  1. Upload three distinct files: `part_1.bin` (TTL: 1m), `part_2.bin` (TTL: 5m), and `part_3.bin` (TTL: 30m).
+  2. Because `part_1.bin` has a very short lifespan (60 seconds), you must upload them in rapid succession (from longest TTL to shortest).
+  3. Once all three files are active in the file index concurrently, run the terminal command `check`.
+  4. The system detects the presence of all three partial signatures, merging them into the decrypted Level 11 concrete grid map.
+
+---
+
+## 10. Phosphor Recovery Protocol (Color Profile Cycle)
+* **Theme**: Chronic exposure to Level 0's monochromatic yellow hue causes sensory bleed-through. Calibrate the CRT console's phosphor gun to align the color vectors of the system log.
+* **App Mechanic**: Application color theme switching and UI rendering modes.
+* **Task Description**:
+  1. Navigate to the terminal console settings or settings modal.
+  2. Toggle the visual UI theme in a specific order: `Amber CRT` -> `Classic Green` -> `Null Dark` -> `Amber CRT`.
+  3. The rapid change in display stylesheets sends a trigger event to the background script, clearing the screen's visual noise and writing a clean calibration hash to the log panel.
+
+---
+
+## 11. The Echo Chamber (Self-Conflict Loop)
+* **Theme**: A whispering hallway in Level 8 duplicates any sound with a slight phase shift. You must trigger a self-referential merge conflict to map the echoes.
+* **App Mechanic**: Modifying text to match a regex representing a cyclic merge.
+* **Task Description**:
+  1. In the text area, type a string like `echo_echo_echo`.
+  2. Go offline, change the text to `echo_phase_echo`, and go online.
+  3. Cause a manual collision where the local state merge is forced to resolve against a concurrently modified server state containing `phase_echo_echo`.
+  4. The terminal reads the resolved string `phase_echo_phase_echo` to calibrate the acoustic echo coordinates.
+

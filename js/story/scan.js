@@ -10,11 +10,10 @@ import { checkNoclipConditions } from './unlock.js';
 export function preScanHeatCheck() {
     const now = Date.now();
     
-    // 1. Cooling calculations (min temperature is 20°C)
+    // 1. Cooling calculations (Newton's Law of Cooling, min temp: 20°C)
     if (gameState.lastScanTime) {
         const secondsPassed = (now - gameState.lastScanTime) / 1000;
-        const coolAmt = Math.floor(secondsPassed * 2.0); // cools at 2.0°C per second
-        gameState.scannerHeat = Math.max(20, (gameState.scannerHeat || 20) - coolAmt);
+        gameState.scannerHeat = Math.max(20, 20 + ((gameState.scannerHeat || 20) - 20) * Math.exp(-0.06 * secondsPassed));
     }
     gameState.lastScanTime = now;
 
@@ -41,21 +40,59 @@ export function runSimulationTick() {
     const activeScans = state.activeScans || [];
     const N = activeScans.length;
 
-    if (N === 0) {
+    if (N === 0 && gameState.scannerHeat <= 20) {
         clearInterval(state.simulationInterval);
         state.simulationInterval = null;
+        if (state.tempLiveLine) {
+            state.tempLiveLine.remove();
+            state.tempLiveLine = null;
+        }
         return;
     }
 
-    // 1. Calculate time elapsed and update temperature (cooling: 2°C/s, heating: 6°C/s per running scan)
+    // 1. Calculate time elapsed and update temperature (exponential cooling, heating: 6°C/s per running scan)
     const elapsedSeconds = gameState.lastScanTime ? (now - gameState.lastScanTime) / 1000 : 1;
     gameState.lastScanTime = now;
 
-    const coolAmt = elapsedSeconds * 2.0;
+    const currentHeat = gameState.scannerHeat || 20;
+    const cooledHeat = 20 + (currentHeat - 20) * Math.exp(-0.06 * elapsedSeconds);
     const heatAmt = elapsedSeconds * N * 6.0;
 
-    gameState.scannerHeat = Math.max(20, Math.min(125, (gameState.scannerHeat || 20) - coolAmt + heatAmt));
+    gameState.scannerHeat = Math.max(20, Math.min(125, cooledHeat + heatAmt));
     saveProgress();
+
+    // 5. Track HW-8 Thermal Equilibrium (95°C - 120°C for 15s)
+    if (!gameState.completedSideMissions.includes('HW-8')) {
+        if (gameState.scannerHeat >= 95 && gameState.scannerHeat <= 120) {
+            gameState.heatBypassTime = (gameState.heatBypassTime || 0) + 1;
+            
+            if (!state.tempLiveLine) {
+                state.tempLiveLine = printLiveLine('', 'warn');
+            }
+            state.tempLiveLine.update(`[i] Thermal equilibrium active: ${gameState.scannerHeat.toFixed(1)}°C | Stabilized: ${gameState.heatBypassTime}/15s`);
+            
+            if (gameState.heatBypassTime >= 15) {
+                printLine('[+] THERMAL EQUILIBRIUM STABILIZED. Run "check" to confirm bypass.', 'ok');
+                if (state.tempLiveLine) {
+                    state.tempLiveLine.remove();
+                    state.tempLiveLine = null;
+                }
+            }
+        } else {
+            if (gameState.heatBypassTime > 0) {
+                gameState.heatBypassTime = 0;
+                if (state.tempLiveLine) {
+                    state.tempLiveLine.update(`[!] Thermal calibration lost (temp: ${gameState.scannerHeat.toFixed(1)}°C). Resetting counter.`);
+                    setTimeout(() => {
+                        if (state.tempLiveLine) {
+                            state.tempLiveLine.remove();
+                            state.tempLiveLine = null;
+                        }
+                    }, 2000);
+                }
+            }
+        }
+    }
 
     // 2. Overheat check (125°C)
     if (gameState.scannerHeat >= 125) {

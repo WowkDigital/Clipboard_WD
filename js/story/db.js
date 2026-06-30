@@ -146,3 +146,22 @@ export const SIDE_MISSIONS = {
     }
 };
 
+export const HARDWARE_MISSIONS = {
+    'HW-8': {
+        id: 'HW-8',
+        title: 'THERMAL_EQUILIBRIUM.bin',
+        desc: 'LOG RECORD: HARDWARE RE-CALIBRATION.\nThe gateway scanner requires high energy to penetrate the thick lead-shielded walls of Level 2 (Pipe Dreams). However, scanning too fast triggers an automatic hardware thermal lockout. You must balance scan sequences to maintain a critical operational temperature.\n\n[TECHNICAL DEVIATION PROTOCOL]:\n1. Run multiple scans in sequence using "scan" to generate heat.\n2. You must achieve and maintain the scanner temperature in the "Superheated Zone" (between 95°C and 120°C) for at least 15 seconds without letting it reach the 125°C automatic lockout limit.\n3. Type "check" in the terminal to verify the calibration sequence.'
+    },
+    'HW-9': {
+        id: 'HW-9',
+        title: 'DECAYING_PACKETS.net',
+        desc: 'LOG RECORD: SECTOR 11 SIGNAL DECAY.\nThe exit codes for Sector 11 (Concrete Desert) are scattered across multiple file packets that decay at different rates. To decrypt the coordinate, all packets must exist in the storage grid simultaneously.\n\n[TECHNICAL DEVIATION PROTOCOL]:\n1. Upload three distinct files: "part_1.bin" (TTL: 1m), "part_2.bin" (TTL: 5m), and "part_3.bin" (TTL: 30m).\n2. Because "part_1.bin" has a very short lifespan (60 seconds), you must upload them in rapid succession (from longest TTL to shortest).\n3. Once all three files are active in the files tab concurrently, run "check" in the terminal.'
+    },
+    'HW-10': {
+        id: 'HW-10',
+        title: 'PHOSPHOR_RECOVERY.sh',
+        desc: 'LOG RECORD: MONOCHROMATIC SENSORY BLEED.\nChronic exposure to Level 0\'s monochromatic yellow hue causes sensory bleed-through. Calibrate the CRT console\'s phosphor gun to align the color vectors of the system log.\n\n[TECHNICAL DEVIATION PROTOCOL]:\n1. Open settings (via the settings icon or command).\n2. Switch visual themes in a specific order: "AMBER", "GREEN", "DARK", and back to "AMBER".\n3. Run "check" in the terminal to verify that the phosphor calibration cycle is successful.'
+    }
+};
+
+

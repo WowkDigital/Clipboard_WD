@@ -8,7 +8,8 @@ const DEFAULT_SETTINGS = {
     width: 'max-w-3xl', // 'max-w-xl', 'max-w-3xl', 'max-w-5xl', 'max-w-full'
     crt: 'on', // 'on', 'off'
     curvature: 'off', // 'on', 'off'
-    glitch: 'off' // 'on', 'off'
+    glitch: 'off', // 'on', 'off'
+    theme: 'amber' // 'amber', 'green', 'dark'
 };
 
 let currentSettings = { ...DEFAULT_SETTINGS };
@@ -62,6 +63,11 @@ function applySettings() {
     document.body.classList.toggle('crt-curved', currentSettings.curvature === 'on');
     document.body.classList.toggle('crt-glitch', currentSettings.glitch === 'on');
 
+    // 6. Apply Color Theme
+    document.body.classList.remove('theme-green', 'theme-dark');
+    if (currentSettings.theme === 'green') document.body.classList.add('theme-green');
+    if (currentSettings.theme === 'dark') document.body.classList.add('theme-dark');
+
     updateActiveButtons();
 }
 
@@ -77,6 +83,7 @@ function updateActiveButtons() {
         if (setting === 'crt' && currentSettings.crt === val) isActive = true;
         if (setting === 'curvature' && currentSettings.curvature === val) isActive = true;
         if (setting === 'glitch' && currentSettings.glitch === val) isActive = true;
+        if (setting === 'theme' && currentSettings.theme === val) isActive = true;
 
         if (isActive) {
             btn.classList.add('tab-active');
@@ -148,6 +155,12 @@ function setupEventListeners() {
                 currentSettings.curvature = val;
             } else if (setting === 'glitch') {
                 currentSettings.glitch = val;
+            } else if (setting === 'theme') {
+                currentSettings.theme = val;
+                // Dispatch theme change callback for story mode calibration
+                if (typeof window.onThemeChange === 'function') {
+                    window.onThemeChange(val);
+                }
             }
 
             saveSettings();

@@ -194,6 +194,21 @@ require_once __DIR__ . '/api.php';
                     </div>
                 </div>
 
+                <!-- Hardware Bypasses list -->
+                <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
+                    <div id="story-hardware-header" class="mono text-xs font-bold border-b pb-1 flex justify-between items-center cursor-pointer select-none" style="border-color:var(--glass-border); color:var(--accent-primary)">
+                        <div class="flex items-center gap-2">
+                            <span>[HARDWARE_BYPASSES]</span>
+                            <span id="story-hardware-toggle" style="color:var(--text-muted)">[-]</span>
+                            <span id="story-hardware-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
+                        </div>
+                        <span id="hardware-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/3</span>
+                    </div>
+                    <div id="story-hardware-list" class="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto">
+                        <!-- Hardware bypasses with status -->
+                    </div>
+                </div>
+
 
                 <!-- Gallery list -->
                 <div class="glass-panel p-4 flex flex-col gap-2 bg-black/40">
@@ -331,6 +346,16 @@ require_once __DIR__ . '/api.php';
                 <div class="grid grid-cols-2 gap-2">
                     <button class="btn-settings-opt btn" data-setting="glitch" data-val="on">ENABLED</button>
                     <button class="btn-settings-opt btn" data-setting="glitch" data-val="off">DISABLED</button>
+                </div>
+            </div>
+
+            <!-- Color Theme Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">COLOR THEME</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="theme" data-val="amber">AMBER</button>
+                    <button class="btn-settings-opt btn" data-setting="theme" data-val="green">GREEN</button>
+                    <button class="btn-settings-opt btn" data-setting="theme" data-val="dark">DARK</button>
                 </div>
             </div>
         </div>

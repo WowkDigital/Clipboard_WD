@@ -442,6 +442,7 @@ export async function loadFiles() {
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
 
+        state.files = data.files; // Save files to state for story mode validation
         renderFiles(data.files);
         setStatus('online', 'ONLINE');
     } catch (e) {

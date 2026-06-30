@@ -14,7 +14,8 @@ export const gameState = {
     collapsedSections: {
         docs: false,
         missions: false,
-        gallery: false
+        gallery: false,
+        hardware: false
     }
 };
 
@@ -34,11 +35,18 @@ export function loadProgress() {
             gameState.scannerHeat = data.scannerHeat ?? 20;
             gameState.overheatedUntil = data.overheatedUntil ?? 0;
             gameState.lastScanTime = data.lastScanTime ?? 0;
+            gameState.heatBypassTime = data.heatBypassTime ?? 0;
+            gameState.themeBypassCalibrated = data.themeBypassCalibrated ?? false;
             gameState.collapsedSections = data.collapsedSections ?? {
                 docs: false,
                 missions: false,
-                gallery: false
+                gallery: false,
+                hardware: false
             };
+            // Fallback for hardware collapsed state
+            if (gameState.collapsedSections.hardware === undefined) {
+                gameState.collapsedSections.hardware = false;
+            }
         } catch (e) {
             console.error('Failed to parse story progress:', e);
         }
@@ -62,10 +70,13 @@ export function resetProgress() {
     gameState.scannerHeat = 20;
     gameState.overheatedUntil = 0;
     gameState.lastScanTime = 0;
+    gameState.heatBypassTime = 0;
+    gameState.themeBypassCalibrated = false;
     gameState.collapsedSections = {
         docs: false,
         missions: false,
-        gallery: false
+        gallery: false,
+        hardware: false
     };
     saveProgress();
 }

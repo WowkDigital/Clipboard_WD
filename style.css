@@ -844,7 +844,6 @@ body.crt-glitch #main-container {
     box-shadow: 0 0 10px rgba(234, 179, 8, 0.15), 0 0 5px rgba(234, 179, 8, 0.05) inset !important;
     text-shadow: 0 0 6px var(--accent-glow) !important;
 }
-
 /* Font VT323 Override */
 body.font-vt323,
 body.font-vt323 * {
@@ -852,4 +851,16 @@ body.font-vt323 * {
     letter-spacing: 0.05em !important;
 }
 
-
+/* Color Themes */
+body.theme-green {
+    --accent-primary: #22c55e;
+    --accent-glow: rgba(34, 197, 94, 0.25);
+    --accent-dim: #166534;
+    --amber: #22c55e;
+}
+body.theme-dark {
+    --accent-primary: #e5e5e5;
+    --accent-glow: rgba(229, 229, 229, 0.25);
+    --accent-dim: #525252;
+    --amber: #e5e5e5;
+}

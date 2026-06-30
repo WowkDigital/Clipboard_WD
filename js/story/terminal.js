@@ -63,11 +63,11 @@ function printNextLine() {
     line.className = 'mono text-xs leading-relaxed py-0.5';
 
     if (type === 'ok') {
-        line.style.color = '#10b981';
+        line.style.color = 'var(--success, #10b981)';
     } else if (type === 'err') {
-        line.style.color = '#ef4444';
+        line.style.color = 'var(--error, #ef4444)';
     } else if (type === 'warn') {
-        line.style.color = '#eab308';
+        line.style.color = 'var(--accent-primary, #eab308)';
     } else if (type === 'sys') {
         line.style.color = '#a855f7';
     } else {
@@ -94,11 +94,11 @@ export function printLiveLine(initialText, type = '') {
     line.className = 'mono text-xs leading-relaxed py-0.5';
     
     if (type === 'ok') {
-        line.style.color = '#10b981';
+        line.style.color = 'var(--success, #10b981)';
     } else if (type === 'err') {
-        line.style.color = '#ef4444';
+        line.style.color = 'var(--error, #ef4444)';
     } else if (type === 'warn') {
-        line.style.color = '#eab308';
+        line.style.color = 'var(--accent-primary, #eab308)';
     } else if (type === 'sys') {
         line.style.color = '#a855f7';
     } else {

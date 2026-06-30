@@ -1,6 +1,6 @@
 'use strict';
 
-import { DOCUMENTS, ANOMALIES, SIDE_MISSIONS } from './db.js';
+import { DOCUMENTS, ANOMALIES, SIDE_MISSIONS, HARDWARE_MISSIONS } from './db.js';
 import { gameState, saveProgress } from './state.js';
 import { printLine } from './terminal.js';
 
@@ -11,6 +11,7 @@ export function updateStoryUI() {
     renderDocuments();
     renderGallery();
     renderSideMissions();
+    renderHardwareBypasses();
     
     // Update counters
     const docsCount = document.getElementById('docs-count');
@@ -25,7 +26,14 @@ export function updateStoryUI() {
 
     const sideCount = document.getElementById('side-missions-count');
     if (sideCount) {
-        sideCount.textContent = `${gameState.completedSideMissions.length}/${Object.keys(SIDE_MISSIONS).length}`;
+        const completedSides = gameState.completedSideMissions.filter(id => id.startsWith('SIDE-')).length;
+        sideCount.textContent = `${completedSides}/${Object.keys(SIDE_MISSIONS).length}`;
+    }
+
+    const hwCount = document.getElementById('hardware-count');
+    if (hwCount) {
+        const completedHws = gameState.completedSideMissions.filter(id => id.startsWith('HW-')).length;
+        hwCount.textContent = `${completedHws}/${Object.keys(HARDWARE_MISSIONS).length}`;
     }
 
     // Update new content badges
@@ -37,8 +45,14 @@ export function updateStoryUI() {
 
     const missionsNew = document.getElementById('story-missions-new');
     if (missionsNew) {
-        const hasNewMissions = gameState.completedSideMissions.some(id => !gameState.seenMissions.includes(id));
+        const hasNewMissions = gameState.completedSideMissions.some(id => id.startsWith('SIDE-') && !gameState.seenMissions.includes(id));
         missionsNew.classList.toggle('hidden', !hasNewMissions);
+    }
+
+    const hwNew = document.getElementById('story-hardware-new');
+    if (hwNew) {
+        const hasNewHws = gameState.completedSideMissions.some(id => id.startsWith('HW-') && !gameState.seenMissions.includes(id));
+        hwNew.classList.toggle('hidden', !hasNewHws);
     }
 
     const galleryNew = document.getElementById('story-gallery-new');
@@ -72,6 +86,14 @@ export function updateCollapsibleStates() {
         missionsToggle.textContent = isCollapsed ? '[+]' : '[-]';
     }
 
+    const hwList = document.getElementById('story-hardware-list');
+    const hwToggle = document.getElementById('story-hardware-toggle');
+    if (hwList && hwToggle) {
+        const isCollapsed = gameState.collapsedSections.hardware;
+        hwList.classList.toggle('hidden', isCollapsed);
+        hwToggle.textContent = isCollapsed ? '[+]' : '[-]';
+    }
+
     const galleryGrid = document.getElementById('story-gallery-grid');
     const galleryToggle = document.getElementById('story-gallery-toggle');
     if (galleryGrid && galleryToggle) {
@@ -101,7 +123,20 @@ export function initCollapsible() {
             gameState.collapsedSections.missions = !gameState.collapsedSections.missions;
             // Mark all completed missions as seen when interacting with header
             gameState.completedSideMissions.forEach(id => {
-                if (!gameState.seenMissions.includes(id)) gameState.seenMissions.push(id);
+                if (id.startsWith('SIDE-') && !gameState.seenMissions.includes(id)) gameState.seenMissions.push(id);
+            });
+            saveProgress();
+            updateStoryUI();
+        });
+    }
+
+    const hwHeader = document.getElementById('story-hardware-header');
+    if (hwHeader) {
+        hwHeader.addEventListener('click', () => {
+            gameState.collapsedSections.hardware = !gameState.collapsedSections.hardware;
+            // Mark all completed hardware bypasses as seen when interacting with header
+            gameState.completedSideMissions.forEach(id => {
+                if (id.startsWith('HW-') && !gameState.seenMissions.includes(id)) gameState.seenMissions.push(id);
             });
             saveProgress();
             updateStoryUI();
@@ -121,6 +156,62 @@ export function initCollapsible() {
         });
     }
 }
+
+export function renderHardwareBypasses() {
+    const list = document.getElementById('story-hardware-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    const hwIds = Object.keys(HARDWARE_MISSIONS);
+
+    hwIds.forEach((id) => {
+        const mission = HARDWARE_MISSIONS[id];
+        const isCompleted = gameState.completedSideMissions.includes(id);
+
+        const el = document.createElement('div');
+        el.className = `doc-item active`;
+
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = mission.title;
+
+        const statusSpan = document.createElement('span');
+        statusSpan.className = 'text-[9px] px-1 rounded border';
+        if (isCompleted) {
+            statusSpan.textContent = 'COMPLETED';
+            statusSpan.style.borderColor = '#10b981';
+            statusSpan.style.color = '#10b981';
+        } else {
+            statusSpan.textContent = 'ACTIVE';
+            statusSpan.style.borderColor = '#eab308';
+            statusSpan.style.color = '#eab308';
+        }
+
+        el.appendChild(titleSpan);
+        el.appendChild(statusSpan);
+
+        el.onclick = () => {
+            if (isCompleted && !gameState.seenMissions.includes(id)) {
+                gameState.seenMissions.push(id);
+                saveProgress();
+                updateStoryUI();
+            }
+            
+            // Scroll to terminal so user knows content appeared there
+            const terminal = document.getElementById('story-terminal-output');
+            if (terminal) {
+                terminal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            printLine(`\n--- HARDWARE PROTOCOL: ${mission.title} ---`, 'sys');
+            printLine(mission.desc, '');
+            printLine(`Status: ${isCompleted ? 'COMPLETED' : 'ACTIVE'}`, isCompleted ? 'ok' : 'warn');
+            printLine('----------------------------------------\n', 'sys');
+        };
+
+        list.appendChild(el);
+    });
+}
+
 
 export function renderSideMissions() {
     const list = document.getElementById('story-side-missions-list');

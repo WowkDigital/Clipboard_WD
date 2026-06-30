@@ -1,11 +1,14 @@
 'use strict';
 
-import { SIDE_MISSIONS } from './db.js';
+import { SIDE_MISSIONS, HARDWARE_MISSIONS } from './db.js';
 import { gameState, saveProgress } from './state.js';
 import { printLine, printLiveLine } from './terminal.js';
 import { updateStoryUI } from './ui.js';
 import { state } from '../state.js';
-import { hashRoomId } from '../crypto.js';
+import { hashRoomId, decrypt } from '../crypto.js';
+import { loadFiles } from '../api.js';
+
+
 
 export async function checkSideMissions() {
     let completedAny = false;
@@ -67,11 +70,110 @@ export async function checkSideMissions() {
         }
     }
 
+    // HW-8: Thermal Equilibrium
+    if (!gameState.completedSideMissions.includes('HW-8')) {
+        if (gameState.heatBypassTime >= 15) {
+            gameState.completedSideMissions.push('HW-8');
+            printLine('[+] HARDWARE PROTOCOL COMPLETED: THERMAL_EQUILIBRIUM.bin', 'ok');
+            printLine('Scanner cooling system recalibrated successfully under heavy load.', 'ok');
+            completedAny = true;
+        }
+    }
+
+    // HW-9: Decaying Packets
+    if (!gameState.completedSideMissions.includes('HW-9')) {
+        await loadFiles();
+        const decryptedFiles = [];
+        if (state.files && state.files.length > 0) {
+            for (const f of state.files) {
+                try {
+                    const metaStr = await decrypt(state.cryptoKey, f.encrypted_meta, f.iv_meta);
+                    const meta = JSON.parse(metaStr);
+                    decryptedFiles.push({
+                        name: meta.name,
+                        created_at: f.created_at
+                    });
+                } catch (e) {
+                    // Decrypt failed
+                }
+            }
+        }
+
+        const p1 = decryptedFiles.find(f => f.name === 'part_1.bin');
+        const p2 = decryptedFiles.find(f => f.name === 'part_2.bin');
+        const p3 = decryptedFiles.find(f => f.name === 'part_3.bin');
+
+        if (p1 && p2 && p3) {
+            const now = Math.floor(Date.now() / 1000);
+            const age1 = now - p1.created_at;
+            const age2 = now - p2.created_at;
+            const age3 = now - p3.created_at;
+
+            if (age1 <= 60 && age2 <= 300 && age3 <= 1800) {
+                gameState.completedSideMissions.push('HW-9');
+                printLine('[+] HARDWARE PROTOCOL COMPLETED: DECAYING_PACKETS.net', 'ok');
+                printLine('All three data packets merged successfully before signal decay threshold.', 'ok');
+                completedAny = true;
+            } else {
+                printLine('[-] Check failed: One or more data packets expired. part_1.bin must be < 60s old.', 'err');
+                printLine(`  part_1.bin age: ${age1}s (limit: 60s) - ${age1 <= 60 ? 'OK' : 'EXPIRED'}`, age1 <= 60 ? 'ok' : 'err');
+                printLine(`  part_2.bin age: ${age2}s (limit: 300s) - ${age2 <= 300 ? 'OK' : 'EXPIRED'}`, age2 <= 300 ? 'ok' : 'err');
+                printLine(`  part_3.bin age: ${age3}s (limit: 1800s) - ${age3 <= 1800 ? 'OK' : 'EXPIRED'}`, age3 <= 1800 ? 'ok' : 'err');
+            }
+        } else {
+            printLine('[-] Check failed: Missing packet files in storage grid.', 'err');
+            printLine(`  Required files: part_1.bin (TTL 1m), part_2.bin (TTL 5m), part_3.bin (TTL 30m).`, 'warn');
+            printLine(`  Found in grid: ${decryptedFiles.map(f => f.name).join(', ') || 'None'}`, 'warn');
+        }
+    }
+
+    // HW-10: Color Theme Sequence
+    if (!gameState.completedSideMissions.includes('HW-10')) {
+        if (gameState.themeBypassCalibrated) {
+            gameState.completedSideMissions.push('HW-10');
+            printLine('[+] HARDWARE PROTOCOL COMPLETED: PHOSPHOR_RECOVERY.sh', 'ok');
+            printLine('CRT Phosphor grid recalibrated. Color profile variance stabilized.', 'ok');
+            completedAny = true;
+        }
+    }
+
     if (completedAny) {
         saveProgress();
         updateStoryUI();
     }
 }
+
+// Theme change tracker for HW-10 color theme sequence (amber -> green -> dark -> amber)
+let themeSequence = [];
+window.onThemeChange = (newTheme) => {
+    if (!gameState.completedSideMissions.includes('HW-10')) {
+        if (newTheme === 'amber') {
+            if (themeSequence.length === 0) {
+                themeSequence.push('amber');
+            } else if (themeSequence.length === 3 && themeSequence[2] === 'dark') {
+                themeSequence.push('amber');
+                gameState.themeBypassCalibrated = true;
+                saveProgress();
+                printLine('[+] PHOSPHOR GUN ALIGNED: Color calibration loop successful. Run "check" to confirm.', 'ok');
+            } else {
+                themeSequence = ['amber']; // Reset to start
+            }
+        } else if (newTheme === 'green') {
+            if (themeSequence.length === 1 && themeSequence[0] === 'amber') {
+                themeSequence.push('green');
+            } else {
+                themeSequence = []; // Invalid reset
+            }
+        } else if (newTheme === 'dark') {
+            if (themeSequence.length === 2 && themeSequence[1] === 'green') {
+                themeSequence.push('dark');
+            } else {
+                themeSequence = []; // Invalid reset
+            }
+        }
+    }
+};
+
 
 export function startBypassMiner() {
     printLine('[+] INITIATING COGNITIVE DECRYPTION (PROOF OF WORK)...', 'sys');
