@@ -8,6 +8,9 @@ export const gameState = {
     seenDocs: ['DOC-1'],
     seenAnomalies: [],
     seenMissions: [],
+    scannerHeat: 20,
+    overheatedUntil: 0,
+    lastScanTime: 0,
     collapsedSections: {
         docs: false,
         missions: false,
@@ -28,6 +31,9 @@ export function loadProgress() {
             gameState.seenDocs = data.seenDocs ?? ['DOC-1'];
             gameState.seenAnomalies = data.seenAnomalies ?? [];
             gameState.seenMissions = data.seenMissions ?? [];
+            gameState.scannerHeat = data.scannerHeat ?? 20;
+            gameState.overheatedUntil = data.overheatedUntil ?? 0;
+            gameState.lastScanTime = data.lastScanTime ?? 0;
             gameState.collapsedSections = data.collapsedSections ?? {
                 docs: false,
                 missions: false,
@@ -53,6 +59,9 @@ export function resetProgress() {
     gameState.seenDocs = ['DOC-1'];
     gameState.seenAnomalies = [];
     gameState.seenMissions = [];
+    gameState.scannerHeat = 20;
+    gameState.overheatedUntil = 0;
+    gameState.lastScanTime = 0;
     gameState.collapsedSections = {
         docs: false,
         missions: false,
