@@ -69,11 +69,12 @@ require_once __DIR__ . '/api.php';
         <div class="hud-right flex flex-wrap items-center gap-2">
             <button class="hud-badge hud-badge-btn" id="btn-new-room">NEW SESSION</button>
             <button class="hud-badge hud-badge-btn" id="btn-copy-url">COPY LINK</button>
+            <button class="hud-badge hud-badge-btn" id="btn-settings">SETTINGS</button>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 flex flex-col gap-5 relative z-10">
+    <main id="main-container" class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 flex flex-col gap-5 relative z-10">
 
         <!-- Main Glass Panel -->
         <div class="glass-panel p-5 flex flex-col gap-4">
@@ -259,6 +260,56 @@ require_once __DIR__ . '/api.php';
             <p id="story-modal-desc" class="mono text-xs leading-relaxed" style="color:var(--text-secondary)"></p>
             <div class="flex justify-end mt-2">
                 <button id="btn-story-modal-close" class="btn">CLOSE RECORD</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retro Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/85 backdrop-blur-sm hidden">
+        <div class="glass-panel p-6 max-w-md w-full mx-4 flex flex-col gap-4">
+            <div class="mono text-xs flex items-center justify-between pb-2 border-b" style="border-color:var(--glass-border)">
+                <span class="flex items-center gap-1.5">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
+                    <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">SYS://SETTINGS</span>
+                </span>
+                <span style="color:var(--text-muted)">[CONFIG]</span>
+            </div>
+            
+            <div class="flex flex-col gap-4 py-2">
+                <!-- Font Size Setting -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="mono text-xs font-bold" style="color:var(--text-secondary)">FONT SIZE</label>
+                    <div class="flex gap-2">
+                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="13">SMALL</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="15">MEDIUM</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="18">LARGE</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="21">XL</button>
+                    </div>
+                </div>
+
+                <!-- Container Width Setting -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="mono text-xs font-bold" style="color:var(--text-secondary)">CONTAINER WIDTH</label>
+                    <div class="flex gap-2">
+                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-xl">NARROW</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-3xl">NORMAL</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-5xl">WIDE</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-full">FULL</button>
+                    </div>
+                </div>
+
+                <!-- CRT Overlay Toggle Setting -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="mono text-xs font-bold" style="color:var(--text-secondary)">CRT FILTER</label>
+                    <div class="flex gap-2">
+                        <button class="btn-settings-opt btn flex-1" data-setting="crt" data-val="on">ENABLED</button>
+                        <button class="btn-settings-opt btn flex-1" data-setting="crt" data-val="off">DISABLED</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-2">
+                <button id="btn-settings-close" class="btn">CLOSE</button>
             </div>
         </div>
     </div>

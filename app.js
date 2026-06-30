@@ -11,6 +11,7 @@ import { deriveKey } from './js/crypto.js';
 import { setStatus, updateCharCount, showConfirm, clearCountdowns } from './js/ui.js';
 import { saveText, pollText, loadFiles, startPolling, stopPolling, clearTextExpiry, resetTTL } from './js/api.js';
 import { initStory } from './js/story.js';
+import { initSettings } from './js/settings.js';
 
 // ── URL & Init ───────────────────────────────────────────────
 function genKey() {
@@ -205,6 +206,7 @@ if (logHeader && logContainer && logToggleIndicator) {
 
 // ── Boot ─────────────────────────────────────────────────────
 (async () => {
+    initSettings();
     log('VOID://CLIPBOARD INITIALIZED', '');
     log('WEB CRYPTO: ' + (crypto.subtle ? 'AES-GCM READY' : 'UNAVAILABLE — USE HTTPS'), crypto.subtle ? '' : 'err');
     await loadFromHash();
