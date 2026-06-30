@@ -4,8 +4,11 @@ const STORAGE_KEY = 'void_clipboard_settings';
 
 const DEFAULT_SETTINGS = {
     fontSize: '15', // '13', '15', '18', '21'
+    fontFamily: 'modern', // 'modern', 'vt323'
     width: 'max-w-3xl', // 'max-w-xl', 'max-w-3xl', 'max-w-5xl', 'max-w-full'
-    crt: 'on' // 'on', 'off'
+    crt: 'on', // 'on', 'off'
+    curvature: 'off', // 'on', 'off'
+    glitch: 'off' // 'on', 'off'
 };
 
 let currentSettings = { ...DEFAULT_SETTINGS };
@@ -39,18 +42,25 @@ function applySettings() {
     // 1. Apply font size
     document.documentElement.style.setProperty('--app-font-size', currentSettings.fontSize + 'px');
 
-    // 2. Apply container width
+    // 2. Apply font family override
+    document.body.classList.toggle('font-vt323', currentSettings.fontFamily === 'vt323');
+
+    // 3. Apply container width
     const mainEl = document.getElementById('main-container');
     if (mainEl) {
         mainEl.classList.remove('max-w-xl', 'max-w-3xl', 'max-w-5xl', 'max-w-full');
         mainEl.classList.add(currentSettings.width);
     }
 
-    // 3. Apply CRT Overlay
+    // 4. Apply CRT Overlay
     const crtOverlay = document.getElementById('crt-overlay');
     if (crtOverlay) {
         crtOverlay.classList.toggle('hidden', currentSettings.crt === 'off');
     }
+
+    // 5. Apply Curvature & Glitch
+    document.body.classList.toggle('crt-curved', currentSettings.curvature === 'on');
+    document.body.classList.toggle('crt-glitch', currentSettings.glitch === 'on');
 
     updateActiveButtons();
 }
@@ -62,8 +72,11 @@ function updateActiveButtons() {
         let isActive = false;
 
         if (setting === 'font-size' && currentSettings.fontSize === val) isActive = true;
+        if (setting === 'font-family' && currentSettings.fontFamily === val) isActive = true;
         if (setting === 'width' && currentSettings.width === val) isActive = true;
         if (setting === 'crt' && currentSettings.crt === val) isActive = true;
+        if (setting === 'curvature' && currentSettings.curvature === val) isActive = true;
+        if (setting === 'glitch' && currentSettings.glitch === val) isActive = true;
 
         if (isActive) {
             btn.classList.add('tab-active');
@@ -79,23 +92,39 @@ function updateActiveButtons() {
 
 function setupEventListeners() {
     const btnSettings = document.getElementById('btn-settings');
-    const modalSettings = document.getElementById('settings-modal');
+    const sidebar = document.getElementById('settings-sidebar');
+    const backdrop = document.getElementById('settings-backdrop');
     const btnCloseSettings = document.getElementById('btn-settings-close');
 
-    if (btnSettings && modalSettings && btnCloseSettings) {
-        btnSettings.addEventListener('click', () => {
-            modalSettings.classList.remove('hidden');
-        });
-
-        const closeModal = () => {
-            modalSettings.classList.add('hidden');
+    if (btnSettings && sidebar && backdrop && btnCloseSettings) {
+        const openModal = () => {
+            sidebar.classList.remove('hidden');
+            backdrop.classList.remove('hidden');
+            // Force reflow
+            void sidebar.offsetWidth;
+            sidebar.classList.add('open');
         };
 
+        const closeModal = () => {
+            sidebar.classList.remove('open');
+            backdrop.classList.add('hidden');
+            
+            const onTransitionEnd = () => {
+                if (!sidebar.classList.contains('open')) {
+                    sidebar.classList.add('hidden');
+                }
+                sidebar.removeEventListener('transitionend', onTransitionEnd);
+            };
+            sidebar.addEventListener('transitionend', onTransitionEnd);
+        };
+
+        btnSettings.addEventListener('click', openModal);
         btnCloseSettings.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
 
         // Close on ESC
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modalSettings.classList.contains('hidden')) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
                 closeModal();
             }
         });
@@ -109,10 +138,16 @@ function setupEventListeners() {
 
             if (setting === 'font-size') {
                 currentSettings.fontSize = val;
+            } else if (setting === 'font-family') {
+                currentSettings.fontFamily = val;
             } else if (setting === 'width') {
                 currentSettings.width = val;
             } else if (setting === 'crt') {
                 currentSettings.crt = val;
+            } else if (setting === 'curvature') {
+                currentSettings.curvature = val;
+            } else if (setting === 'glitch') {
+                currentSettings.glitch = val;
             }
 
             saveSettings();

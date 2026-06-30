@@ -767,4 +767,89 @@ textarea::placeholder {
     color: var(--text-main) !important;
 }
 
+/* ============================================================
+   SIDEBAR PANEL
+   ============================================================ */
+.sidebar-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    z-index: 1000;
+    background: rgba(10, 10, 10, 0.95) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border-left: 1px solid var(--glass-border) !important;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8) !important;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-panel.open {
+    transform: translateX(0) !important;
+}
+
+/* ============================================================
+   RETRO MONITOR EFFECTS (CRT, CURVATURE, GLITCH)
+   ============================================================ */
+body.crt-curved {
+    transform: perspective(1200px) rotateX(0.5deg) scale(0.985);
+    filter: contrast(1.05) saturate(1.1);
+    transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+body.crt-curved::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.45) 100%), 
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+        linear-gradient(90deg, rgba(234, 179, 8, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+    background-size: 100% 100%, 100% 4px, 6px 100%;
+    z-index: 99;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+body.crt-glitch #main-container {
+    animation: body-glitch 6s infinite step-end;
+}
+
+@keyframes body-glitch {
+    0%, 95%, 98%, 100% {
+        transform: none;
+        filter: none;
+    }
+    96% {
+        transform: translate(3px, 1.5px) skewX(1.5deg);
+        filter: hue-rotate(45deg) saturate(1.4) contrast(1.2);
+    }
+    97% {
+        transform: translate(-2px, -3px) skewX(-1.5deg);
+        filter: hue-rotate(135deg) contrast(1.6);
+    }
+    99% {
+        transform: translate(1px, 2px) skewX(0);
+        filter: invert(0.08) sepia(0.2);
+    }
+}
+
+/* Active Option Highlighting inside settings panel */
+.btn-settings-opt.tab-active {
+    color: var(--accent-primary) !important;
+    border-color: var(--accent-primary) !important;
+    background: rgba(234, 179, 8, 0.08) !important;
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.15), 0 0 5px rgba(234, 179, 8, 0.05) inset !important;
+    text-shadow: 0 0 6px var(--accent-glow) !important;
+}
+
+/* Font VT323 Override */
+body.font-vt323,
+body.font-vt323 * {
+    font-family: var(--font-title) !important;
+    letter-spacing: 0.05em !important;
+}
+
 

@@ -203,7 +203,7 @@ require_once __DIR__ . '/api.php';
                             <span id="story-gallery-toggle" style="color:var(--text-muted)">[-]</span>
                             <span id="story-gallery-new" class="text-[9px] bg-amber/15 border border-amber/40 px-1.5 py-0.5 rounded text-amber-500 animate-pulse hidden" style="color:var(--accent-primary); border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.15)">NEW CONTENT</span>
                         </div>
-                        <span id="gallery-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/4</span>
+                        <span id="gallery-count" class="text-xs font-medium" style="color:var(--text-secondary)">0/8</span>
                     </div>
                     <div id="story-gallery-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-[260px] overflow-y-auto">
                         <!-- Discovered photos thumbnail grid -->
@@ -264,53 +264,79 @@ require_once __DIR__ . '/api.php';
         </div>
     </div>
 
-    <!-- Retro Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/85 backdrop-blur-sm hidden">
-        <div class="glass-panel p-6 max-w-md w-full mx-4 flex flex-col gap-4">
-            <div class="mono text-xs flex items-center justify-between pb-2 border-b" style="border-color:var(--glass-border)">
-                <span class="flex items-center gap-1.5">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
-                    <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">SYS://SETTINGS</span>
-                </span>
-                <span style="color:var(--text-muted)">[CONFIG]</span>
-            </div>
-            
-            <div class="flex flex-col gap-4 py-2">
-                <!-- Font Size Setting -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="mono text-xs font-bold" style="color:var(--text-secondary)">FONT SIZE</label>
-                    <div class="flex gap-2">
-                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="13">SMALL</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="15">MEDIUM</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="18">LARGE</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="font-size" data-val="21">XL</button>
-                    </div>
-                </div>
-
-                <!-- Container Width Setting -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="mono text-xs font-bold" style="color:var(--text-secondary)">CONTAINER WIDTH</label>
-                    <div class="flex gap-2">
-                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-xl">NARROW</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-3xl">NORMAL</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-5xl">WIDE</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="width" data-val="max-w-full">FULL</button>
-                    </div>
-                </div>
-
-                <!-- CRT Overlay Toggle Setting -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="mono text-xs font-bold" style="color:var(--text-secondary)">CRT FILTER</label>
-                    <div class="flex gap-2">
-                        <button class="btn-settings-opt btn flex-1" data-setting="crt" data-val="on">ENABLED</button>
-                        <button class="btn-settings-opt btn flex-1" data-setting="crt" data-val="off">DISABLED</button>
-                    </div>
+    <!-- Retro Settings Sidebar Panel -->
+    <div id="settings-backdrop" class="fixed inset-0 z-[999] bg-black/20 hidden"></div>
+    <div id="settings-sidebar" class="sidebar-panel flex flex-col gap-4 p-6 hidden">
+        <div class="mono text-xs flex items-center justify-between pb-2 border-b" style="border-color:var(--glass-border)">
+            <span class="flex items-center gap-1.5">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber pulse" style="background-color:var(--accent-primary)"></span>
+                <span style="color:var(--accent-primary); font-weight:600; letter-spacing:0.05em;">SYS://SETTINGS</span>
+            </span>
+            <span style="color:var(--text-muted)">[CONFIG]</span>
+        </div>
+        
+        <div class="flex flex-col gap-5 py-4 flex-1">
+            <!-- Font Size Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">FONT SIZE</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="font-size" data-val="13">SMALL</button>
+                    <button class="btn-settings-opt btn" data-setting="font-size" data-val="15">MEDIUM</button>
+                    <button class="btn-settings-opt btn" data-setting="font-size" data-val="18">LARGE</button>
+                    <button class="btn-settings-opt btn" data-setting="font-size" data-val="21">XL</button>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 mt-2">
-                <button id="btn-settings-close" class="btn">CLOSE</button>
+            <!-- Font Family Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">FONT FAMILY</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="font-family" data-val="modern">MODERN</button>
+                    <button class="btn-settings-opt btn" data-setting="font-family" data-val="vt323">VT323</button>
+                </div>
             </div>
+
+            <!-- Container Width Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">CONTAINER WIDTH</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="width" data-val="max-w-xl">NARROW</button>
+                    <button class="btn-settings-opt btn" data-setting="width" data-val="max-w-3xl">NORMAL</button>
+                    <button class="btn-settings-opt btn" data-setting="width" data-val="max-w-5xl">WIDE</button>
+                    <button class="btn-settings-opt btn" data-setting="width" data-val="max-w-full">FULL</button>
+                </div>
+            </div>
+
+            <!-- CRT Overlay Toggle Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">CRT FILTER</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="crt" data-val="on">ENABLED</button>
+                    <button class="btn-settings-opt btn" data-setting="crt" data-val="off">DISABLED</button>
+                </div>
+            </div>
+
+            <!-- Curvature Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">SCREEN CURVATURE</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="curvature" data-val="on">ENABLED</button>
+                    <button class="btn-settings-opt btn" data-setting="curvature" data-val="off">DISABLED</button>
+                </div>
+            </div>
+
+            <!-- Glitch Setting -->
+            <div class="flex flex-col gap-2">
+                <label class="mono text-xs font-bold" style="color:var(--text-secondary)">RETRO GLITCHES</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="btn-settings-opt btn" data-setting="glitch" data-val="on">ENABLED</button>
+                    <button class="btn-settings-opt btn" data-setting="glitch" data-val="off">DISABLED</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end mt-2">
+            <button id="btn-settings-close" class="btn w-full">CLOSE</button>
         </div>
     </div>
 

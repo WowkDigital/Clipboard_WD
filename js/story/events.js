@@ -90,7 +90,33 @@ export function executeScan() {
     }, 250);
 }
 
+export function checkForScanAnomalies() {
+    const scanOnlyIds = ['IMG-5', 'IMG-6', 'IMG-7', 'IMG-8'];
+    const lockedScanOnly = scanOnlyIds.filter(id => !gameState.unlockedAnomalies.includes(id));
+    
+    if (lockedScanOnly.length > 0) {
+        // 35% chance to discover one of the remaining scan-only anomalies
+        if (Math.random() < 0.35) {
+            const discoverId = lockedScanOnly[Math.floor(Math.random() * lockedScanOnly.length)];
+            gameState.unlockedAnomalies.push(discoverId);
+            printLine('\n----------------------------------------', 'ok');
+            printLine('[!] DEEP SCAN SUCCESSFUL: SECURE FREQUENCY DETECTED', 'ok');
+            printLine(`[NEW ANOMALY SPOTTED]: ${ANOMALIES[discoverId].title}`, 'ok');
+            printLine(`Description: ${ANOMALIES[discoverId].desc}`, 'sys');
+            printLine('Check the anomaly gallery to view the photograph.', 'sys');
+            printLine('----------------------------------------\n', 'ok');
+            saveProgress();
+            updateStoryUI();
+            return true;
+        }
+    }
+    return false;
+}
+
 export function processScanResults() {
+    // Check if we can unlock scan-only anomalies
+    checkForScanAnomalies();
+
     if (gameState.stage === 0) {
         // Stage 0 -> Unlock Anomaly 1
         if (!gameState.unlockedAnomalies.includes('IMG-1')) {

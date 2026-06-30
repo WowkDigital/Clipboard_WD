@@ -72,25 +72,49 @@ export const ANOMALIES = {
         id: 'IMG-1',
         title: 'Level 0 Lobby',
         src: 'assets/story/liminal_1.png',
-        desc: 'A monotonous loop of empty, damp yellow rooms with fluorescent lights.'
+        desc: 'A monotonous, nightmarish maze of empty rooms covered in moist yellow wallpaper. The air is heavy, reeking of damp carpet, and the silence is broken only by the maddening, high-pitched hum of fluorescent lights buzzing at an unstable frequency. It feels as if the walls themselves are shifting when you look away.'
     },
     'IMG-2': {
         id: 'IMG-2',
         title: 'Level 37 Poolrooms',
         src: 'assets/story/liminal_2.png',
-        desc: 'Chlorine-scented water and tiled chambers extending infinitely.'
+        desc: 'A serene yet deeply disturbing sanctuary of lukewarm, crystal-clear water and pristine white tiled architecture. The chambers bend into infinite arches, reflecting the soft, source-less illumination. The echoing sound of dripping water creates a hypnotic atmosphere that erodes your memory, leaving only the scent of chlorine.'
     },
     'IMG-3': {
         id: 'IMG-3',
         title: 'Level 188 Courtyard',
         src: 'assets/story/liminal_3.png',
-        desc: 'A rectangular courtyard surrounded by windows with a grey, static sky.'
+        desc: 'A towering rectangular courtyard enclosed by thousands of identical, dark windows. No sound escapes from behind the glass, and the sky above is a flat, static-grey void. The crushing feeling of being observed by unseen eyes is constant, making this space highly volatile and prone to reality-bending shifts.'
     },
     'IMG-4': {
         id: 'IMG-4',
         title: 'Liminal Escape',
         src: 'assets/story/liminal_4.png',
-        desc: 'The gateway exit. Blinding white light offering a path back to reality.'
+        desc: 'The boundary exit vector where the physical constraints of the liminal dimensions collapse. Glaring white light floods the fractured architecture, dissolving the yellow wallpaper and concrete pillars. It represents the final, fragile transition threshold leading back to the baseline reality of the outside world.'
+    },
+    'IMG-5': {
+        id: 'IMG-5',
+        title: 'Level 1 Habitable Zone',
+        src: 'assets/story/liminal_5.png',
+        desc: 'A vast, cold industrial concrete warehouse stretching into the darkness. Long metal pipes run along the walls, carrying freezing coolant. A low-hanging, chilly fog blankets the floor, and flickering industrial lamps cast long, eerie shadows. Faint echoes of distant machinery suggest some hidden mechanism operating deep in the dark.'
+    },
+    'IMG-6': {
+        id: 'IMG-6',
+        title: 'Level 2 Pipe Dreams',
+        src: 'assets/story/liminal_6.png',
+        desc: 'A suffocating network of narrow, dark concrete corridors packed with heavy, burning copper pipes. Hot steam leaks from the seals, filling the air with oppressive heat and a metallic smell. Low-voltage red emergency lights cast a bloody glow on the dirty walls, while distant metallic banging sounds echo through the pipe vents.'
+    },
+    'IMG-7': {
+        id: 'IMG-7',
+        title: 'Level 11 Concrete Desert',
+        src: 'assets/story/liminal_7.png',
+        desc: 'An infinite, silent metropolis constructed entirely of raw concrete buildings, roads, and skyscrapers. There are no cars, no plants, and no signs of life. The sky is trapped in a permanent, dark orange sunset, casting long, frozen shadows across empty streets. The wind whistles through the vacant concrete structures like a quiet whisper from a forgotten world.'
+    },
+    'IMG-8': {
+        id: 'IMG-8',
+        title: 'Level 18 Childhood Memories',
+        src: 'assets/story/liminal_8.png',
+        desc: 'A dimly lit playroom that evokes an intense, melancholic feeling of nostalgia. The walls are covered in faded, peeling wallpaper showing vintage cartoons. A soft circular rug sits in the center, hosting a single, dusty teddy bear. A faint, slow music box melody plays from nowhere, carrying a bittersweet feeling of safety and abandonment.'
     }
 };
 
